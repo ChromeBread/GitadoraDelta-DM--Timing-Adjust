@@ -3,112 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>緑数字計算ツール (GITADORA to IIDX)</title>
+    <title>GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
-        }
-        h1 {
-            text-align: center;
+            background-color: #f5f5f5;
             color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            touch-action: none; /* Prevent touch until overlay is dismissed */
         }
         .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+            flex: 1;
+        }
+        h1 {
+            font-size: 1.5em;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.1em;
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .lang-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #007aff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
         }
         .input-group {
             margin-bottom: 15px;
         }
         label {
-            display: inline-block;
-            width: 200px;
+            display: block;
+            margin-bottom: 5px;
             font-weight: bold;
         }
-        input {
-            padding: 5px;
-            width: 100px;
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        input[readonly] {
+            background-color: #e0e0e0;
         }
         .result {
             margin-top: 20px;
-            padding: 10px;
-            background-color: #e0ffe0;
-            border-radius: 4px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             text-align: center;
-            font-size: 1.2em;
         }
-        .description {
+        .notes {
             margin-top: 20px;
             font-size: 0.9em;
             color: #555;
         }
+        .history {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255,255,255,0.9);
+            padding: 10px;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            max-height: 10%;
+            overflow-y: auto;
+            font-size: 0.8em;
+            color: #333;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            touch-action: none;
+        }
+        .overlay-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 80%;
+        }
+        .overlay-content strong {
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 15px;
+        }
+        .overlay-content button {
+            background-color: #007aff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        @media (max-width: 400px) {
+            h1 { font-size: 1.2em; }
+            h2 { font-size: 0.9em; }
+            input[type="number"], input[type="text"] { font-size: 0.9em; }
+            .lang-toggle { font-size: 0.8em; padding: 6px 10px; }
+        }
     </style>
 </head>
 <body>
-    <h1>緑数字計算ツール (GITADORA to IIDX)</h1>
-    <div class="container">
-        <div class="input-group">
-            <label for="speed">SPEED (倍):</label>
-            <input type="number" id="speed" value="3.75" step="0.01" oninput="calculateGreenNumber()">
-        </div>
-        <div class="input-group">
-            <label for="laneVertical">LANE VERTICAL (単位):</label>
-            <input type="number" id="laneVertical" value="25" step="1" oninput="calculateGreenNumber()">
-        </div>
-        <div class="input-group">
-            <label for="screenDelay">画面遅延 (ms):</label>
-            <input type="number" id="screenDelay" value="9" step="0.1" oninput="calculateGreenNumber()">
-        </div>
-        <div class="input-group">
-            <label for="shutterOut">SHUTTER OUT (%):</label>
-            <input type="number" id="shutterOut" value="50" step="1" oninput="calculateGreenNumber()">
-        </div>
-        <div class="result" id="result">
-            緑数字: 357
-        </div>
-        <div class="description">
-            <p><strong>説明:</strong></p>
-            <p>このツールは、GITADORAの設定値からBeatmania IIDXの緑数字（GN）を計算します。以下の値を入力してください：</p>
-            <ul>
-                <li><strong>SPEED:</strong> GITADORAのスクロール速度（例：3.75x）。</li>
-                <li><strong>LANE VERTICAL:</strong> 判定ラインの位置調整（基準値20からの差を考慮）。</li>
-                <li><strong>画面遅延:</strong> 画面表示の遅延（ms）。音声遅延は0msと仮定。</li>
-                <li><strong>SHUTTER OUT:</strong> 擬似判定ラインの位置（%）。1%につき緑数字を0.2調整（仮定）。</li>
-            </ul>
-            <p>計算式：緑数字 = (SPEED × 75) - (LANE VERTICAL - 20) × 0.5 + (画面遅延 ÷ 0.1) - (SHUTTER OUT × 0.2)</p>
+    <div class="overlay" id="overlay">
+        <div class="overlay-content">
+            <strong id="overlay-text"></strong>
+            <button onclick="dismissOverlay()">☐</button>
         </div>
     </div>
+    <button class="lang-toggle" onclick="toggleLanguage()">English</button>
+    <div class="container">
+        <h1 id="title">GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</h1>
+        <h2 id="subtitle">Set the shutter top as the judgment line to disable delay.</h2>
+        <div class="input-group">
+            <label for="hi-speed">HI-SPEED</label>
+            <input type="number" id="hi-speed" step="0.05" value="3.75">
+        </div>
+        <div class="input-group">
+            <label for="note-adjust">ノーツ 表示調整 / Note Display Adjustment</label>
+            <input type="number" id="note-adjust" value="-6">
+        </div>
+        <div class="input-group">
+            <label for="judge-line">判定ライン 位置 / Judgment Line Position</label>
+            <input type="number" id="judge-line" value="8">
+        </div>
+        <div class="input-group">
+            <label for="shutter-in">SHUTTER (IN)</label>
+            <input type="number" id="shutter-in" value="25">
+        </div>
+        <div class="input-group">
+            <label for="shutter-out">SHUTTER (OUT)</label>
+            <input type="text" id="shutter-out" value="16" readonly>
+        </div>
+        <div class="input-group">
+            <label for="green-number">緑数字 / Green Number (ms)</label>
+            <input type="number" id="green-number" value="0">
+        </div>
+        <div class="result" id="result">Green Number: 0 ms</div>
+        <div class="notes" id="notes"></div>
+    </div>
+    <div class="history" id="history"></div>
 
     <script>
-        function calculateGreenNumber() {
-            // 入力値を取得
-            const speed = parseFloat(document.getElementById('speed').value) || 0;
-            const laneVertical = parseFloat(document.getElementById('laneVertical').value) || 0;
-            const screenDelay = parseFloat(document.getElementById('screenDelay').value) || 0;
-            const shutterOut = parseFloat(document.getElementById('shutterOut').value) || 0;
+        const translations = {
+            ja: {
+                title: "GITADORA GALAXY WAVE DELTA Drummania Settings Generator (非公式)",
+                subtitle: "シャッター上部を判定ラインに設定して遅延を無効化。",
+                overlay: "目押し勢 or 新規プレイヤー<br>どちらかに該当する方のみ<br>ここをタップ→☐",
+                langButton: "English",
+                notes: "※コナステのHI-SPEED調整は0.5単位<br>※GITADORA GALAXY WAVE DELTAの初期出荷モニターは遅延9ms<br>※各スピーカーから出る音の奥行バランスが曲によって異なるため、ヘッドホンを装着して音声遅延が0であると仮定する",
+                hiSpeed: "HI-SPEED",
+                noteAdjust: "ノーツ 表示調整",
+                judgeLine: "判定ライン 位置",
+                shutterIn: "SHUTTER (IN)",
+                shutterOut: "SHUTTER (OUT)",
+                greenNumber: "緑数字 (ms)"
+            },
+            en: {
+                title: "GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)",
+                subtitle: "Set the shutter top as the judgment line to disable delay.",
+                overlay: "Visual Timing Players or New Players<br>Only those who apply<br>Tap here→☐",
+                langButton: "日本語",
+                notes: "※Konaste HI-SPEED adjustment is in 0.5 increments<br>※GITADORA GALAXY WAVE DELTA's initial monitor has a 9ms delay<br>※Due to varying sound depth balance per song, assume 0ms audio delay with headphones",
+                hiSpeed: "HI-SPEED",
+                noteAdjust: "Note Display Adjustment",
+                judgeLine: "Judgment Line Position",
+                shutterIn: "SHUTTER (IN)",
+                shutterOut: "SHUTTER (OUT)",
+                greenNumber: "Green Number (ms)"
+            }
+        };
 
-            // 計算
-            const baseGreenNumber = speed * 75; // SPEEDから緑数字への変換
-            const laneVerticalAdjustment = laneVertical > 20 ? (laneVertical - 20) * 0.5 : 0; // LANE VERTICALの調整
-            const screenDelayAdjustment = screenDelay / 0.1; // 画面遅延の補正
-            const shutterOutAdjustment = shutterOut * 0.2; // SHUTTER OUTの調整
+        let currentLang = localStorage.getItem('language') || 'ja';
+        let history = JSON.parse(localStorage.getItem('history')) || [];
 
-            // 最終的な緑数字
-            const greenNumber = baseGreenNumber - laneVerticalAdjustment + screenDelayAdjustment - shutterOutAdjustment;
-
-            // 結果を四捨五入して表示
-            document.getElementById('result').textContent = `緑数字: ${Math.round(greenNumber)}`;
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('language', lang);
+            document.getElementById('title').innerText = translations[lang].title;
+            document.getElementById('subtitle').innerText = translations[lang].subtitle;
+            document.getElementById('overlay-text').innerHTML = translations[lang].overlay;
+            document.getElementById('lang-toggle').innerText = translations[lang].langButton;
+            document.getElementById('notes').innerHTML = translations[lang].notes;
+            document.querySelector('label[for="hi-speed"]').innerText = translations[lang].hiSpeed;
+            document.querySelector('label[for="note-adjust"]').innerText = translations[lang].noteAdjust;
+            document.querySelector('label[for="judge-line"]').innerText = translations[lang].judgeLine;
+            document.querySelector('label[for="shutter-in"]').innerText = translations[lang].shutterIn;
+            document.querySelector('label[for="shutter-out"]').innerText = translations[lang].shutterOut;
+            document.querySelector('label[for="green-number"]').innerText = translations[lang].greenNumber;
         }
 
-        // 初回計算
-        calculateGreenNumber();
+        function toggleLanguage() {
+            setLanguage(currentLang === 'ja' ? 'en' : 'ja');
+        }
+
+        function dismissOverlay() {
+            document.getElementById('overlay').style.display = 'none';
+            document.body.style.touchAction = 'auto';
+        }
+
+        function calculateGreenNumber() {
+            const hiSpeed = parseFloat(document.getElementById('hi-speed').value) || 3.75;
+            const noteAdjust = parseInt(document.getElementById('note-adjust').value) || 0;
+            const judgeLine = parseInt(document.getElementById('judge-line').value) || 0;
+            const shutterIn = parseInt(document.getElementById('shutter-in').value) || 25;
+            const monitorDelay = 9; // 9ms fixed delay
+            const frameTime = 16.67; // 60fps
+            // Formula: Green Number = -(noteAdjust * frameTime + judgeLine * 1 - monitorDelay)
+            const greenNumber = -(noteAdjust * frameTime + judgeLine * 1 - monitorDelay);
+            document.getElementById('green-number').value = greenNumber.toFixed(2);
+            updateResult(greenNumber);
+            saveHistory({ hiSpeed, noteAdjust, judgeLine, shutterIn, greenNumber });
+        }
+
+        function reverseCalculate() {
+            const greenNumber = parseFloat(document.getElementById('green-number').value) || 0;
+            const monitorDelay = 9;
+            const frameTime = 16.67;
+            // Reverse: noteAdjust = -((greenNumber + monitorDelay - judgeLine * 1) / frameTime)
+            const judgeLine = parseInt(document.getElementById('judge-line').value) || 0;
+            const noteAdjust = -((greenNumber + monitorDelay - judgeLine * 1) / frameTime);
+            document.getElementById('note-adjust').value = Math.round(noteAdjust);
+            calculateGreenNumber(); // Recalculate to ensure consistency
+        }
+
+        function updateResult(greenNumber) {
+            document.getElementById('result').innerText = `Green Number: ${greenNumber.toFixed(2)} ms`;
+        }
+
+        function saveHistory(data) {
+            const timestamp = new Date().toLocaleString('ja-JP');
+            history.unshift({ timestamp, ...data });
+            if (history.length > 10) history.pop(); // Limit to 10 entries
+            localStorage.setItem('history', JSON.stringify(history));
+            updateHistory();
+        }
+
+        function updateHistory() {
+            const historyDiv = document.getElementById('history');
+            historyDiv.innerHTML = history.map(entry => 
+                `${entry.timestamp}: HI-SPEED=${entry.hiSpeed}, ノーツ表示調整=${entry.noteAdjust}, 判定ライン=${entry.judgeLine}, SHUTTER IN=${entry.shutterIn}, Green Number=${entry.greenNumber.toFixed(2)}ms`
+            ).join('<br>');
+        }
+
+        // Load saved inputs
+        function loadSavedInputs() {
+            const saved = JSON.parse(localStorage.getItem('inputs')) || {};
+            document.getElementById('hi-speed').value = saved.hiSpeed || 3.75;
+            document.getElementById('note-adjust').value = saved.noteAdjust || -6;
+            document.getElementById('judge-line').value = saved.judgeLine || 8;
+            document.getElementById('shutter-in').value = saved.shutterIn || 25;
+            calculateGreenNumber();
+        }
+
+        // Save inputs on change
+        function saveInputs() {
+            const inputs = {
+                hiSpeed: document.getElementById('hi-speed').value,
+                noteAdjust: document.getElementById('note-adjust').value,
+                judgeLine: document.getElementById('judge-line').value,
+                shutterIn: document.getElementById('shutter-in').value
+            };
+            localStorage.setItem('inputs', JSON.stringify(inputs));
+        }
+
+        // Event listeners
+        document.getElementById('hi-speed').addEventListener('input', () => { saveInputs(); calculateGreenNumber(); });
+        document.getElementById('note-adjust').addEventListener('input', () => { saveInputs(); calculateGreenNumber(); });
+        document.getElementById('judge-line').addEventListener('input', () => { saveInputs(); calculateGreenNumber(); });
+        document.getElementById('shutter-in').addEventListener('input', () => { saveInputs(); calculateGreenNumber(); });
+        document.getElementById('green-number').addEventListener('input', () => { reverseCalculate(); });
+
+        // Initialize
+        setLanguage(currentLang);
+        loadSavedInputs();
+        updateHistory();
     </script>
 </body>
 </html>
