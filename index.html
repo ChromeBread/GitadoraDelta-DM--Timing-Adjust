@@ -30,7 +30,7 @@
         h1 {
             font-size: 1.2em;
             text-align: center;
-            margin: 20px 0 10px; /* Add top margin to avoid overlap with buttons */
+            margin: 20px 0 10px; /* Space below language buttons */
         }
         h2 {
             font-size: 0.9em;
@@ -43,11 +43,11 @@
             top: 10px;
             right: 10px;
             font-size: 0.8em;
-            z-index: 1001; /* Ensure buttons are above other elements */
+            z-index: 1001; /* Above modal and other elements */
         }
         .lang-toggle button {
             cursor: pointer;
-            touch-action: manipulation; /* Improve touch responsiveness */
+            touch-action: manipulation; /* Ensure touch responsiveness */
             padding: 5px 10px;
             border: 1px solid #007bff;
             background: #007bff;
@@ -151,15 +151,14 @@
 <body onload="loadSettings()">
     <div id="modal" class="modal">
         <div class="modal-content">
-            <p id="modal-text-en">Visual judgment players or new players only<br>Please tap OK</p>
-            <p id="modal-text-jp" style="display: none;">目押し勢 or 新規プレイヤー<br>どちらかに該当する方のみ<br>OKボタンをタップ</p>
+            <p>目押し勢 or 新規プレイヤー<br>どちらかに該当する方のみ<br>OKボタンをタップ</p>
             <button onclick="closeModal()">OK</button>
         </div>
     </div>
     <div class="container">
         <div class="lang-toggle">
-            <button id="lang-en" onclick="toggleLanguage('en')" ontouchstart="toggleLanguage('en')">English</button>
-            <button id="lang-jp" onclick="toggleLanguage('jp')" ontouchstart="toggleLanguage('jp')" style="display: none;">日本語</button>
+            <button id="lang-en" onclick="toggleLanguage('en')" ontouchend="toggleLanguage('en')">English</button>
+            <button id="lang-jp" onclick="toggleLanguage('jp')" ontouchend="toggleLanguage('jp')" style="display: none;">日本語</button>
         </div>
         <h1 id="title-en">GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</h1>
         <h1 id="title-jp" style="display: none;">GITADORA GALAXY WAVE DELTA Drummania 設定ジェネレーター（非公式）</h1>
@@ -251,13 +250,10 @@
         function closeModal() {
             console.log('Modal closed'); // Debug log
             document.getElementById('modal').style.display = 'none';
-            document.getElementById('modal-text-en').style.display = language === 'en' ? 'block' : 'none';
-            document.getElementById('modal-text-jp').style.display = language === 'jp' ? 'block' : 'none';
         }
 
         function toggleLanguage(lang) {
             console.log('Toggling to language: ' + lang); // Debug log
-            if (language === lang) return; // Prevent redundant toggles
             language = lang;
 
             // Toggle language buttons
@@ -279,10 +275,6 @@
             // Toggle description
             document.getElementById('desc-en').style.display = lang === 'en' ? 'block' : 'none';
             document.getElementById('desc-jp').style.display = lang === 'jp' ? 'block' : 'none';
-
-            // Update modal text
-            document.getElementById('modal-text-en').style.display = lang === 'en' ? 'block' : 'none';
-            document.getElementById('modal-text-jp').style.display = lang === 'jp' ? 'block' : 'none';
         }
 
         function loadSettings() {
