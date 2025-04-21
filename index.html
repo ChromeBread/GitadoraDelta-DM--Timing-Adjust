@@ -3,162 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</title>
-    <style type="text/css">
-        /* Minimal inline styles to avoid CSS file, per requirements */
-        body { margin: 0; padding: 10px; font-family: Arial, sans-serif; background: #f0f0f0; }
-        .container { max-width: 360px; margin: 0 auto; text-align: center; }
-        h1 { font-size: 20px; margin: 10px 0; }
-        h2 { font-size: 16px; color: #555; margin: 5px 0; }
-        .lang-toggle { position: fixed; top: 10px; right: 10px; z-index: 1000; }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: flex; align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 5px; text-align: center; }
-        .field { margin: 10px 0; }
-        .field label { display: inline-block; width: 150px; text-align: right; }
-        .field input, .field button { font-size: 16px; padding: 5px; }
-        .field input[disabled] { background: #ccc; }
-        .warning { color: red; font-size: 14px; }
-        .notes { font-size: 12px; text-align: left; margin: 10px 0; }
-        .history { border: 1px solid #ccc; padding: 10px; margin-top: 20px; text-align: left; font-size: 12px; }
+    <title>GITADORA GALAXY WAVE DELTA Drummania Settings Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 360px;
+            margin: auto;
+            text-align: center;
+            position: relative;
+        }
+        h1 {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+        h2 {
+            font-size: 1.2em;
+            color: #555;
+            margin: 5px 0;
+        }
+        .lang-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: #fff;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 80%;
+        }
+        .modal[hidden] {
+            display: none;
+        }
+        .field {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .field label {
+            flex: 1;
+            text-align: left;
+        }
+        .field input, .field button {
+            margin-left: 10px;
+        }
+        input[readonly] {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .warning {
+            color: red;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+        .notes {
+            font-size: 0.9em;
+            text-align: left;
+            margin: 20px 0;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+        }
+        [lang="ja"] .en, [lang="en"] .ja {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <!-- Language Toggle -->
-    <div class="lang-toggle">
-        <form action="" method="get" autocomplete="on">
-            <input type="submit" name="lang" value="English" style="font-weight: bold;">
-            <input type="submit" name="lang" value="日本語">
-        </form>
-    </div>
-
-    <!-- Modal for Initial Confirmation -->
     <div class="modal" id="modal">
         <div class="modal-content">
-            <p>
-                <strong>
-                    Visual timing players or new players only<br>
-                    Tap OK to proceed
-                </strong><br>
-                目押し勢 or 新規プレイヤー<br>
-                どちらかに該当する方のみ<br>
-                OKボタンをタップ
-            </p>
-            <form action="" method="get">
-                <input type="submit" value="OK">
+            <p class="en">Visual timing players or new players only<br>Tap OK to proceed</p>
+            <p class="ja">目押し勢または新規プレイヤーのみ<br>OKボタンをタップ</p>
+            <form action="#main">
+                <button type="submit">OK</button>
             </form>
         </div>
     </div>
-
-    <!-- Main Content -->
-    <div class="container">
-        <h1>GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</h1>
-        <h2>Set the shutter top as the judgment line to disable delay.</h2>
-
-        <!-- Form for Settings -->
-        <form action="" method="get" autocomplete="on">
-            <!-- Editable Fields -->
+    <div class="container" id="main">
+        <div class="lang-toggle">
+            <form>
+                <label><input type="radio" name="lang" value="en" checked onchange="document.documentElement.lang = this.value;"> English</label>
+                <label><input type="radio" name="lang" value="ja" onchange="document.documentElement.lang = this.value;"> 日本語</label>
+            </form>
+        </div>
+        <h1 class="en">GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</h1>
+        <h1 class="ja">GITADORA GALAXY WAVE DELTA ドラムマニア設定ジェネレーター（非公式）</h1>
+        <h2 class="en">Set the shutter top as the judgment line to disable delay.</h2>
+        <h2 class="ja">シャッター上部を判定ラインとして遅延を無効化。</h2>
+        <form>
             <div class="field">
-                <label>BPM:</label>
-                <input type="number" name="bpm" value="180" min="1" step="1" required>
-                <button type="submit" name="bpm_adj" value="dec">-</button>
-                <button type="submit" name="bpm_adj" value="inc">+</button>
+                <label class="en">BPM:</label>
+                <label class="ja">BPM：</label>
+                <button type="button" disabled>-</button>
+                <input type="number" name="bpm" value="180" min="1" step="1">
+                <button type="button" disabled>+</button>
             </div>
             <div class="field">
-                <label>HI-SPEED:</label>
-                <input type="number" name="hispeed" value="3.75" min="0.5" max="10.0" step="0.25" required>
-                <button type="submit" name="hispeed_adj" value="dec">-</button>
-                <button type="submit" name="hispeed_adj" value="inc">+</button>
+                <label class="en">HI-SPEED:</label>
+                <label class="ja">ハイスピード：</label>
+                <button type="button" disabled>-</button>
+                <input type="number" name="hi-speed" value="3.75" min="0.5" max="10" step="0.25">
+                <button type="button" disabled>+</button>
             </div>
             <div class="field">
-                <label>Green Number:</label>
-                <input type="number" name="green" value="300" min="100" max="600" step="1" required>
-                <button type="submit" name="green_adj" value="dec">-</button>
-                <button type="submit" name="green_adj" value="inc">+</button>
+                <label class="en">Note Display Adjust:</label>
+                <label class="ja">ノーツ表示調整：</label>
+                <button type="button" disabled>-</button>
+                <input type="number" name="note-adjust" value="-6" min="-20" max="20" step="1">
+                <button type="button" disabled>+</button>
             </div>
             <div class="field">
-                <label>Note Display Adj:</label>
-                <input type="number" name="note_adj" value="-6" min="-20" max="20" step="1" required>
-            </div>
-
-            <!-- Read-Only Fields -->
-            <div class="field">
-                <label>Judgment Line Pos:</label>
-                <input type="number" name="judge_pos" value="8" min="0" max="20" disabled>
+                <label class="en">Judgment Line Position:</label>
+                <label class="ja">判定ライン位置：</label>
+                <input type="number" name="judge-line" value="8" min="0" max="20" readonly>
             </div>
             <div class="field">
-                <label>SHUTTER (IN):</label>
-                <input type="number" name="shutter_in" value="25" min="0" max="30" disabled>
+                <label class="en">SHUTTER (IN):</label>
+                <label class="ja">シャッター（イン）：</label>
+                <input type="number" name="shutter-in" value="25" min="0" max="30" readonly>
             </div>
             <div class="field">
-                <label>SHUTTER (OUT):</label>
-                <input type="number" name="shutter_out" value="16" disabled>
+                <label class="en">SHUTTER (OUT):</label>
+                <label class="ja">シャッター（アウト）：</label>
+                <input type="number" name="shutter-out" value="16" readonly>
             </div>
             <div class="field">
-                <label>Refresh Rate (Hz):</label>
-                <input type="number" name="refresh" value="60" disabled>
+                <label class="en">Refresh Rate (Hz):</label>
+                <label class="ja">リフレッシュレート（Hz）：</label>
+                <input type="number" name="refresh-rate" value="60" readonly>
             </div>
             <div class="field">
-                <label>Monitor Delay (ms):</label>
-                <input type="number" name="delay" value="9" disabled>
+                <label class="en">Monitor Delay (ms):</label>
+                <label class="ja">モニター遅延（ms）：</label>
+                <input type="number" name="monitor-delay" value="9" readonly>
             </div>
             <div class="field">
-                <label>White Number:</label>
-                <input type="number" name="white" value="0" disabled>
+                <label class="en">Green Number (Pseudo):</label>
+                <label class="ja">緑数字（擬似）：</label>
+                <input type="number" name="green-number" value="0" readonly>
             </div>
-
-            <!-- Warning for HI-SPEED Limits -->
-            <div class="warning">
-                Note: HI-SPEED must be within interpolated limits (e.g., BPM 78: x8.5, BPM 180: x3.75, BPM 400: x1.5). Values outside this range require adjustment.
+            <div class="field">
+                <label class="en">White Number (Pseudo):</label>
+                <label class="ja">白数字（擬似）：</label>
+                <input type="number" name="white-number" value="0" readonly>
             </div>
         </form>
-
-        <!-- Explanation -->
+        <div class="warning en" hidden>Adjustment required: HI-SPEED exceeds interpolated limits.</div>
+        <div class="warning ja" hidden>調整が必要です：ハイスピードが補間限界を超えています。</div>
         <div class="notes">
-            <h3>Explanation (説明)</h3>
-            <p>
-                This tool generates settings for GITADORA GALAXY WAVE DELTA Drummania by fixing SHUTTER (OUT) as the judgment line and adjusting other parameters to minimize note blur at 60Hz refresh rate with 9ms monitor delay. BPM, HI-SPEED, or Green Number changes adjust Note Display Adj, Judgment Line Pos, and SHUTTER (IN) to maintain consistent timing. Green/White Numbers mimic Beatmania IIDX scroll speed and timing metrics. HI-SPEED limits are interpolated (BPM 78: x8.5, BPM 180: x3.75, BPM 400: x1.5) to prevent note blur.
+            <h3 class="en">Explanation</h3>
+            <h3 class="ja">説明</h3>
+            <p class="en">
+                This tool helps configure *GITADORA GALAXY WAVE DELTA Drummania* settings to fix the SHUTTER (OUT) top as the judgment line, minimizing visual note jitter. Due to the no-JS constraint, calculations must be done manually. The green number (pseudo-BPM adjustment, similar to IIDX) maintains consistent note spacing. For BPM=180, HI-SPEED=x3.75, Note Display Adjust=-6 is optimal. For other BPMs, use spline interpolation between limits (BPM=78: HI-SPEED=x8.5; BPM=400: HI-SPEED=x1.5). Formula: Green Number = (60000 / BPM) * HI-SPEED * (Refresh Rate / 60). Adjust HI-SPEED, Note Display Adjust, Judgment Line Position, and SHUTTER (IN) to maintain this value when BPM changes. Monitor delay (9ms) is compensated by Note Display Adjust.
             </p>
-            <p>
-                このツールは、SHUTTER (OUT)を判定ラインとして固定し、60Hzのリフレッシュレートと9msのモニター遅延でノーツのブレを最小限に抑えるために、GITADORA GALAXY WAVE DELTA Drummaniaの設定を生成します。BPM、HI-SPEED、または緑数字の変更は、ノーツ表示調整、判定ライン位置、SHUTTER (IN)を調整して一貫したタイミングを維持します。緑/白数字はBeatmania IIDXのスクロール速度とタイミングメトリクスを模倣します。HI-SPEEDの制限は、ノーツのブレを防ぐために補間されます（BPM 78: x8.5、BPM 180: x3.75、BPM 400: x1.5）。
+            <p class="ja">
+                このツールは、*GITADORA GALAXY WAVE DELTA ドラムマニア*の設定を調整し、シャッター（アウト）の上部を判定ラインとして固定し、ノーツのブレを最小限に抑えるのに役立ちます。JSを使用できないため、計算は手動で行う必要があります。緑数字（IIDXに似た擬似BPM調整）は、ノーツの間隔を一定に保ちます。BPM=180の場合、ハイスピード=x3.75、ノーツ表示調整=-6が最適です。他のBPMでは、限界値（BPM=78：ハイスピード=x8.5、BPM=400：ハイスピード=x1.5）の間でスプライン補間を使用します。計算式：緑数字 = (60000 / BPM) * ハイスピード * (リフレッシュレート / 60)。BPM変更時にこの値を維持するよう、ハイスピード、ノーツ表示調整、判定ライン位置、シャッター（イン）を調整します。モニター遅延（9ms）はノーツ表示調整で補正されます。
+            </p>
+            <h3 class="en">Notes</h3>
+            <h3 class="ja">注意書き</h3>
+            <p class="en">
+                - Konaste HI-SPEED adjusts in 0.5 units.<br>
+                - Assumes initial monitor delay of 9ms.<br>
+                - Sound depth varies by song; use headphones for zero audio delay.<br>
+                - HI-SPEED: x3.75 at BPM: 180 is the limit for stable notes.
+            </p>
+            <p class="ja">
+                - コナステのハイスピード調整は0.5単位です。<br>
+                - 初期出荷モニターの遅延は9msと仮定。<br>
+                - 曲によってスピーカー音の奥行バランスが異なるため、ヘッドホン装着で音声遅延なしを想定。<br>
+                - ハイスピード：x3.75、BPM：180はノーツがブレない限界です。
             </p>
         </div>
-
-        <!-- Notes and Warnings -->
-        <div class="notes">
-            <h3>Notes (注意書き)</h3>
-            <p>
-                ※ Konaste's HI-SPEED adjustment is in 0.5 units.<br>
-                ※ GITADORA GALAXY WAVE DELTA's initial monitor is assumed to have 9ms delay.<br>
-                ※ Due to varying sound depth balance per song, use headphones to assume no audio delay.<br>
-                ※ HI-SPEED: x3.75 at BPM: 180 is the limit for no note blur.
-            </p>
-            <p>
-                ※ コナステのHI-SPEED調整は0.5単位です。<br>
-                ※ GITADORA GALAXY WAVE DELTAの初期出荷モニターは遅延9msと仮定。<br>
-                ※ 各スピーカーから出る音の奥行バランスが曲によって異なるため、ヘッドホンを装着して音声遅延無しを想定。<br>
-                ※ HI-SPEED: x3.75 BPM: 180はノーツがぶれない限度です。
-            </p>
-        </div>
-
-        <!-- Change History -->
-        <div class="history">
-            <h3>Change History (変更履歴)</h3>
-            <p>
-                [Timestamp: N/A] Default values loaded: BPM: 180, HI-SPEED: x3.75, Green Number: 300, Note Display Adj: -6<br>
-                Note: Timestamps and dynamic updates require server-side logic or JavaScript, not supported in pure HTML.
-            </p>
+        <div>
+            <h3 class="en">Change Log</h3>
+            <h3 class="ja">変更履歴</h3>
+            <textarea class="en" placeholder="Manually enter changes (e.g., 2025-04-21 19:02 JST, BPM=180, HI-SPEED=3.75)"></textarea>
+            <textarea class="ja" placeholder="変更を手動で入力（例：2025-04-21 19:02 JST、BPM=180、ハイスピード=3.75）"></textarea>
         </div>
     </div>
-
-    <!-- GitHub Hosting Instructions -->
-    <!--
-        To host on GitHub:
-        1. Create a GitHub repository (e.g., `gitadora-settings`).
-        2. Save this code as `index.html`.
-        3. Push to the repository's `main` or `gh-pages` branch.
-        4. Enable GitHub Pages in repository settings under "Pages" (use `main` or `gh-pages` branch).
-        5. Access at `https://<username>.github.io/<repository>/`.
-    -->
 </body>
 </html>
