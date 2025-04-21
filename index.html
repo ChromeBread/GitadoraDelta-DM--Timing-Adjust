@@ -2,180 +2,385 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background: #f5f5f5;
+            color: #333;
+            font-size: 16px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 20px;
+            margin: 0 0 10px;
+            text-align: center;
+            color: #222;
+        }
+        h2 {
+            font-size: 16px;
+            font-weight: normal;
+            margin: 0 0 20px;
+            text-align: center;
+            color: #555;
+        }
+        .lang-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 14px;
+            color: #007aff;
+            text-decoration: none;
+        }
+        .modal {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20% auto;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .modal-content p {
+            margin: 0 0 20px;
+            font-size: 16px;
+            color: #333;
+        }
+        .modal-content button {
+            background: #007aff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .field {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .field label {
+            flex: 1;
+            color: #333;
+        }
+        .field input, .field button {
+            width: 60px;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .field input:disabled {
+            background: #e0e0e0;
+            color: #888;
+        }
+        .field button {
+            width: 30px;
+            background: #007aff;
+            color: #fff;
+            border: none;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        .warning {
+            color: red;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .description, .notes {
+            font-size: 12px;
+            color: #555;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+        .history {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 12px;
+            color: #333;
+            margin-top: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
-<body style="font-family: sans-serif; margin: 0; padding: 10px; max-width: 100%; box-sizing: border-box;">
-    <!-- Language Switch -->
-    <div style="text-align: right;">
-        <form action="" method="get">
-            <label for="lang">Language:</label>
-            <select id="lang" name="lang" onchange="this.form.submit()">
-                <option value="en" selected>English</option>
-                <option value="jp">日本語</option>
-            </select>
-        </form>
+<body>
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <p data-lang="en">Only for timing-based players or new players<br>Tap OK to proceed</p>
+            <p data-lang="jp" class="hidden">目押し勢または新規プレイヤーの方のみ<br>OKをタップしてください</p>
+            <button onclick="document.getElementById('modal').style.display='none';">OK</button>
+        </div>
     </div>
+    <div class="container">
+        <a href="#" class="lang-toggle" onclick="toggleLanguage(); return false;" data-lang="en">日本語</a>
+        <a href="#" class="lang-toggle hidden" onclick="toggleLanguage(); return false;" data-lang="jp">English</a>
+        <h1 data-lang="en">GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</h1>
+        <h1 data-lang="jp" class="hidden">GITADORA GALAXY WAVE DELTA ドラムマニア設定ジェネレーター（非公式）</h1>
+        <h2 data-lang="en">Set the shutter top as the judgment line to disable delay.</h2>
+        <h2 data-lang="jp" class="hidden">シャッター上部を判定ラインとして遅延を無効化。</h2>
 
-    <!-- Modal Dialog -->
-    <dialog open style="border: 1px solid #000; padding: 20px; background: #fff; position: fixed; top: 20%; left: 10%; width: 80%; max-width: 300px; z-index: 1000;">
-        <p style="font-weight: bold; text-align: center;">
-            For players aiming for precise timing or new players only<br>
-            Tap OK to proceed
-        </p>
-        <form method="dialog">
-            <button type="submit" style="display: block; margin: 0 auto; padding: 10px 20px;">OK</button>
-        </form>
-    </dialog>
-
-    <!-- Main Content -->
-    <h1 style="font-size: 1.5em; text-align: center;">
-        GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)
-    </h1>
-    <h2 style="font-size: 1.2em; text-align: center; font-weight: normal;">
-        Set the shutter top as the judgment line to disable delay.
-    </h2>
-
-    <!-- Settings Form -->
-    <form action="" method="post" style="display: flex; flex-direction: column; gap: 10px; margin: 20px auto; max-width: 300px;">
-        <!-- BPM -->
-        <div>
-            <label for="bpm">BPM:</label><br>
-            <input type="number" id="bpm" name="bpm" value="180" min="1" step="1" required style="width: 80px;">
-            <button type="button" onclick="this.form.bpm.value = parseInt(this.form.bpm.value) - 1">−</button>
-            <button type="button" onclick="this.form.bpm.value = parseInt(this.form.bpm.value) + 1">+</button>
+        <div class="field">
+            <label data-lang="en">BPM:</label>
+            <label data-lang="jp" class="hidden">BPM：</label>
+            <button onclick="updateBPM(-1)">-</button>
+            <input type="number" id="bpm" value="180" min="1" step="1" oninput="calculateSettings()">
+            <button onclick="updateBPM(1)">+</button>
+        </div>
+        <div class="field">
+            <label data-lang="en">HI-SPEED:</label>
+            <label data-lang="jp" class="hidden">HI-SPEED：</label>
+            <button onclick="updateHiSpeed(-0.25)">-</button>
+            <input type="number" id="hi-speed" value="3.75" min="0.5" max="10" step="0.25" oninput="calculateSettings()">
+            <button onclick="updateHiSpeed(0.25)">+</button>
+            <span id="hi-speed-warning" class="warning hidden" data-lang="en">Adjust required</span>
+            <span id="hi-speed-warning-jp" class="warning hidden" data-lang="jp">調整必要</span>
+        </div>
+        <div class="field">
+            <label data-lang="en">Green Number:</label>
+            <label data-lang="jp" class="hidden">緑数字：</label>
+            <button onclick="updateGreenNumber(-1)">-</button>
+            <input type="number" id="green-number" value="300" min="1" step="1" oninput="calculateSettings()">
+            <button onclick="updateGreenNumber(1)">+</button>
+        </div>
+        <div class="field">
+            <label data-lang="en">White Number:</label>
+            <label data-lang="jp" class="hidden">白数字：</label>
+            <input type="number" id="white-number" value="150" disabled>
+        </div>
+        <div class="field">
+            <label data-lang="en">Note Display Adjust:</label>
+            <label data-lang="jp" class="hidden">ノーツ表示調整：</label>
+            <input type="number" id="note-adjust" value="-6" disabled>
+        </div>
+        <div class="field">
+            <label data-lang="en">Judgment Line Position:</label>
+            <label data-lang="jp" class="hidden">判定ライン位置：</label>
+            <input type="number" id="judge-line" value="8" disabled>
+        </div>
+        <div class="field">
+            <label data-lang="en">SHUTTER (IN):</label>
+            <label data-lang="jp" class="hidden">SHUTTER (IN)：</label>
+            <input type="number" id="shutter-in" value="25" disabled>
+        </div>
+        <div class="field">
+            <label data-lang="en">SHUTTER (OUT):</label>
+            <label data-lang="jp" class="hidden">SHUTTER (OUT)：</label>
+            <input type="number" id="shutter-out" value="16" disabled>
+        </div>
+        <div class="field">
+            <label data-lang="en">Refresh Rate (Hz):</label>
+            <label data-lang="jp" class="hidden">リフレッシュレート(Hz)：</label>
+            <input type="number" id="refresh-rate" value="60" disabled>
+        </div>
+        <div class="field">
+            <label data-lang="en">Monitor Delay (ms):</label>
+            <label data-lang="jp" class="hidden">モニター遅延(ms)：</label>
+            <input type="number" id="monitor-delay" value="9" disabled>
         </div>
 
-        <!-- HI-SPEED -->
-        <div>
-            <label for="hi-speed">HI-SPEED:</label><br>
-            <input type="number" id="hi-speed" name="hi-speed" value="3.75" min="0.5" max="10.0" step="0.25" required style="width: 80px;">
-            <button type="button" onclick="this.form['hi-speed'].value = Math.max(0.5, Math.min(10.0, (Math.round(parseFloat(this.form['hi-speed'].value) * 4) - 1) / 4)).toFixed(2)">−</button>
-            <button type="button" onclick="this.form['hi-speed'].value = Math.max(0.5, Math.min(10.0, (Math.round(parseFloat(this.form['hi-speed'].value) * 4) + 1) / 4)).toFixed(2)">+</button>
-            <span id="hi-speed-warning" style="color: red; display: none;">Adjust required</span>
+        <div class="description">
+            <p data-lang="en">This tool generates settings for GITADORA GALAXY WAVE DELTA Drummania to fix the SHUTTER (OUT) top as the judgment line, minimizing note display jitter at 60Hz. Calculations adjust HI-SPEED, Note Display Adjust, Judgment Line Position, and SHUTTER (IN) based on BPM or Green Number changes, using spline interpolation between BPM 78 (HI-SPEED x8.5) and BPM 400 (HI-SPEED x1.5). Green and White Numbers mimic Beatmania IIDX for timing reference.</p>
+            <p data-lang="jp" class="hidden">このツールは、GITADORA GALAXY WAVE DELTA ドラムマニアの設定を生成し、SHUTTER (OUT) の上部を判定ラインとして固定し、60Hzでのノーツ表示のブレを最小化します。BPMまたは緑数字の変更に基づいて、HI-SPEED、ノーツ表示調整、判定ライン位置、SHUTTER (IN)をスプライン補間（BPM 78でHI-SPEED x8.5、BPM 400でHI-SPEED x1.5）で調整します。緑数字と白数字はビートマニアIIDXのタイミングを模倣します。</p>
         </div>
 
-        <!-- Green Number (Editable, represents timing adjustment) -->
-        <div>
-            <label for="green-number">Green Number:</label><br>
-            <input type="number" id="green-number" name="green-number" value="294" min="0" step="1" required style="width: 80px;">
-            <button type="button" onclick="this.form['green-number'].value = parseInt(this.form['green-number'].value) - 1">−</button>
-            <button type="button" onclick="this.form['green-number'].value = parseInt(this.form['green-number'].value) + 1">+</button>
+        <div class="notes">
+            <p data-lang="en">Notes:<br>※ Konaste HI-SPEED adjusts in 0.5 units.<br>※ Assumes initial monitor delay of 9ms.<br>※ Sound depth varies by song; use headphones for zero audio delay.<br>※ HI-SPEED x3.75 at BPM 180 is the limit for stable notes.</p>
+            <p data-lang="jp" class="hidden">注意：<br>※ コナステのHI-SPEEDは0.5単位で調整。<br>※ 初期出荷モニターの遅延は9msと仮定。<br>※ 曲によりスピーカー音の奥行きが異なるため、ヘッドホンで音声遅延なしを想定。<br>※ HI-SPEED x3.75、BPM 180はノーツがブレない限界。</p>
         </div>
 
-        <!-- Notes Display Adjustment (Read-only) -->
-        <div>
-            <label for="notes-adjust">Notes Display Adjustment:</label><br>
-            <input type="number" id="notes-adjust" name="notes-adjust" value="-6" min="-20" max="20" readonly style="width: 80px; background: #e0e0e0;">
+        <div class="history" id="history">
+            <p data-lang="en">Change History:</p>
+            <p data-lang="jp" class="hidden">変更履歴：</p>
+            <p id="history-log"></p>
         </div>
-
-        <!-- Judgment Line Position (Read-only) -->
-        <div>
-            <label for="judge-line">Judgment Line Position:</label><br>
-            <input type="number" id="judge-line" name="judge-line" value="8" min="0" max="20" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <!-- SHUTTER (IN) (Read-only) -->
-        <div>
-            <label for="shutter-in">SHUTTER (IN):</label><br>
-            <input type="number" id="shutter-in" name="shutter-in" value="25" min="0" max="30" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <!-- SHUTTER (OUT) (Fixed) -->
-        <div>
-            <label for="shutter-out">SHUTTER (OUT):</label><br>
-            <input type="number" id="shutter-out" name="shutter-out" value="16" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <!-- Refresh Rate (Fixed) -->
-        <div>
-            <label for="refresh-rate">Refresh Rate (Hz):</label><br>
-            <input type="number" id="refresh-rate" name="refresh-rate" value="60" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <!-- Monitor Delay (Fixed) -->
-        <div>
-            <label for="monitor-delay">Monitor Delay (ms):</label><br>
-            <input type="number" id="monitor-delay" name="monitor-delay" value="9" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <!-- White Number (Read-only, placeholder) -->
-        <div>
-            <label for="white-number">White Number:</label><br>
-            <input type="number" id="white-number" name="white-number" value="0" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <button type="submit" style="padding: 10px; margin-top: 10px;">Save Settings</button>
-    </form>
-
-    <!-- Explanation -->
-    <details style="margin: 20px auto; max-width: 300px;">
-        <summary>Explanation</summary>
-        <p>
-            This tool helps adjust GITADORA GALAXY WAVE DELTA Drummania settings to fix the SHUTTER (OUT) top as the judgment line, minimizing note timing issues. Default settings (BPM: 180, HI-SPEED: x3.75) are optimized for a 60Hz refresh rate and 9ms monitor delay. Adjust BPM, HI-SPEED, or Green Number to maintain timing accuracy. HI-SPEED limits are approximated: BPM 78 (x8.5), BPM 180 (x3.75), BPM 400 (x1.5). Values outside these may require adjustment (shown in red). Green/White Numbers mimic Beatmania IIDX timing for familiarity.
-        </p>
-    </details>
-
-    <!-- Notes -->
-    <details style="margin: 20px auto; max-width: 300px;">
-        <summary>Notes</summary>
-        <ul>
-            <li>Konaste HI-SPEED adjusts in 0.5 units.</li>
-            <li>Assumes 9ms delay for GITADORA’s default monitor.</li>
-            <li>Sound balance varies by song; use headphones for no audio delay.</li>
-            <li>HI-SPEED x3.75 at BPM 180 is the note stability limit.</li>
-        </ul>
-    </details>
-
-    <!-- History Log -->
-    <div style="margin: 20px auto; max-width: 300px;">
-        <h3>Change History</h3>
-        <textarea rows="5" style="width: 100%;" placeholder="Manually log changes here, e.g., '2025-04-21 20:38: BPM changed to 200'"></textarea>
-    </div>
-
-    <!-- Japanese Translation (Hidden by Default) -->
-    <div id="jp-content" style="display: none;">
-        <h1 style="font-size: 1.5em; text-align: center;">
-            GITADORA GALAXY WAVE DELTA Drummania 設定ジェネレーター（非公式）
-        </h1>
-        <h2 style="font-size: 1.2em; text-align: center; font-weight: normal;">
-            シャッター上部を判定ラインとして設定し、遅延を無効化。
-        </h2>
-        <dialog open style="border: 1px solid #000; padding: 20px; background: #fff; position: fixed; top: 20%; left: 10%; width: 80%; max-width: 300px; z-index: 1000;">
-            <p style="font-weight: bold; text-align: center;">
-                目押し勢または新規プレイヤー<br>
-                のいずれかに該当する方のみ<br>
-                OKボタンをタップ
-            </p>
-            <form method="dialog">
-                <button type="submit" style="display: block; margin: 0 auto; padding: 10px 20px;">OK</button>
-            </form>
-        </dialog>
-        <details style="margin: 20px auto; max-width: 300px;">
-            <summary>説明</summary>
-            <p>
-                このツールは、GITADORA GALAXY WAVE DELTA Drummaniaの設定を調整し、SHUTTER (OUT)の上部を判定ラインとして固定することで、ノーツのタイミング問題を最小限に抑えます。デフォルト設定（BPM: 180、HI-SPEED: x3.75）は、60Hzのリフレッシュレートと9msのモニター遅延向けに最適化されています。BPM、HI-SPEED、または緑数字を調整してタイミング精度を維持します。HI-SPEEDの制限は近似：BPM 78（x8.5）、BPM 180（x3.75）、BPM 400（x1.5）。これを超える値は調整が必要（赤文字で表示）。緑/白数字はBeatmania IIDXのタイミングを模倣。
-            </p>
-        </details>
-        <details style="margin: 20px auto; max-width: 300px;">
-            <summary>注意</summary>
-            <ul>
-                <li>コナステのHI-SPEEDは0.5単位で調整。</li>
-                <li>GITADORAの初期出荷モニターは9msの遅延を想定。</li>
-                <li>曲によりスピーカーの音の奥行きバランスが異なるため、ヘッドホン使用で音声遅延なしを想定。</li>
-                <li>HI-SPEED x3.75、BPM 180はノーツがブレない限界。</li>
-            </ul>
-        </details>
     </div>
 
     <script>
-        // Minimal JS to handle language switch (unavoidable for dynamic content)
-        const lang = new URLSearchParams(window.location.search).get('lang') || 'en';
-        if (lang === 'jp') {
-            document.querySelector('h1').textContent = 'GITADORA GALAXY WAVE DELTA Drummania 設定ジェネレーター（非公式）';
-            document.querySelector('h2').textContent = 'シャッター上部を判定ラインとして設定し、遅延を無効化。';
-            document.getElementById('lang').value = 'jp';
+        // Language toggle
+        function toggleLanguage() {
+            const enElements = document.querySelectorAll('[data-lang="en"]');
+            const jpElements = document.querySelectorAll('[data-lang="jp"]');
+            const isEnglish = enElements[0].classList.contains('hidden');
+            enElements.forEach(el => el.classList.toggle('hidden', !isEnglish));
+            jpElements.forEach(el => el.classList.toggle('hidden', isEnglish));
+            saveSettings();
         }
+
+        // Load saved settings
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('gitadoraSettings')) || {};
+            document.getElementById('bpm').value = settings.bpm || 180;
+            document.getElementById('hi-speed').value = settings.hiSpeed || 3.75;
+            document.getElementById('green-number').value = settings.greenNumber || 300;
+            document.getElementById('history-log').innerHTML = settings.history || '';
+            calculateSettings();
+        }
+
+        // Save settings
+        function saveSettings() {
+            const settings = {
+                bpm: document.getElementById('bpm').value,
+                hiSpeed: document.getElementById('hi-speed').value,
+                greenNumber: document.getElementById('green-number').value,
+                history: document.getElementById('history-log').innerHTML
+            };
+            localStorage.setItem('gitadoraSettings', JSON.stringify(settings));
+        }
+
+        // Update BPM
+        function updateBPM(delta) {
+            const bpmInput = document.getElementById('bpm');
+            let bpm = parseInt(bpmInput.value) + delta;
+            if (bpm < 1) bpm = 1;
+            bpmInput.value = bpm;
+            calculateSettings();
+            logChange(`BPM: ${bpm}`);
+        }
+
+        // Update HI-SPEED
+        function updateHiSpeed(delta) {
+            const hiSpeedInput = document.getElementById('hi-speed');
+            let hiSpeed = parseFloat(hiSpeedInput.value) + delta;
+            hiSpeed = Math.round(hiSpeed * 100) / 100; // Ensure 2 decimal places
+            if (hiSpeed < 0.5) hiSpeed = 0.5;
+            if (hiSpeed > 10) hiSpeed = 10;
+            hiSpeedInput.value = hiSpeed;
+            calculateSettings();
+            logChange(`HI-SPEED: ${hiSpeed}`);
+        }
+
+        // Update Green Number
+        function updateGreenNumber(delta) {
+            const greenInput = document.getElementById('green-number');
+            let green = parseInt(greenInput.value) + delta;
+            if (green < 1) green = 1;
+            greenInput.value = green;
+            calculateSettings();
+            logChange(`Green Number: ${green}`);
+        }
+
+        // Log changes with timestamp
+        function logChange(change) {
+            const timestamp = new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' });
+            const historyLog = document.getElementById('history-log');
+            historyLog.innerHTML = `[${timestamp}] ${change}<br>` + historyLog.innerHTML;
+            saveSettings();
+        }
+
+        // Calculate settings
+        function calculateSettings() {
+            const bpm = parseInt(document.getElementById('bpm').value) || 180;
+            const hiSpeedInput = document.getElementById('hi-speed');
+            let hiSpeed = parseFloat(hiSpeedInput.value) || 3.75;
+            const greenInput = document.getElementById('green-number');
+            let greenNumber = parseInt(greenInput.value) || 300;
+
+            // Spline interpolation for HI-SPEED limits
+            const bpmPoints = [78, 180, 400];
+            const hiSpeedPoints = [8.5, 3.75, 1.5];
+            let hiSpeedLimit;
+            if (bpm <= bpmPoints[0]) hiSpeedLimit = hiSpeedPoints[0];
+            else if (bpm >= bpmPoints[2]) hiSpeedLimit = hiSpeedPoints[2];
+            else {
+                // Linear interpolation for simplicity (spline not implemented without JS math libraries)
+                if (bpm <= bpmPoints[1]) {
+                    const t = (bpm - bpmPoints[0]) / (bpmPoints[1] - bpmPoints[0]);
+                    hiSpeedLimit = hiSpeedPoints[0] + t * (hiSpeedPoints[1] - hiSpeedPoints[0]);
+                } else {
+                    const t = (bpm - bpmPoints[1]) / (bpmPoints[2] - bpmPoints[1]);
+                    hiSpeedLimit = hiSpeedPoints[1] + t * (hiSpeedPoints[2] - hiSpeedPoints[1]);
+                }
+            }
+
+            // Check HI-SPEED limit
+            const warningEn = document.getElementById('hi-speed-warning');
+            const warningJp = document.getElementById('hi-speed-warning-jp');
+            if (hiSpeed > hiSpeedLimit) {
+                warningEn.classList.remove('hidden');
+                warningJp.classList.remove('hidden');
+            } else {
+                warningEn.classList.add('hidden');
+                warningJp.classList.add('hidden');
+            }
+
+            // Green Number calculation (simplified, mimicking IIDX)
+            // Green Number = (60 / BPM) * (1000 / HI-SPEED) * constant
+            const constant = 500; // Adjusted to match typical IIDX values
+            if (document.activeElement === document.getElementById('bpm')) {
+                greenNumber = Math.round((60 / bpm) * (1000 / hiSpeed) * constant);
+                greenInput.value = greenNumber;
+            } else if (document.activeElement === document.getElementById('hi-speed')) {
+                greenNumber = Math.round((60 / bpm) * (1000 / hiSpeed) * constant);
+                greenInput.value = greenNumber;
+            } else if (document.activeElement === document.getElementById('green-number')) {
+                hiSpeed = (60 / bpm) * (1000 / greenNumber) * constant;
+                hiSpeed = Math.round(hiSpeed * 100) / 100;
+                if (hiSpeed < 0.5) hiSpeed = 0.5;
+                if (hiSpeed > 10) hiSpeed = 10;
+                hiSpeedInput.value = hiSpeed;
+            }
+
+            // Note Display Adjust (simplified mapping, -6 at BPM 180, HI-SPEED 3.75)
+            let noteAdjust = Math.round(-6 * (180 / bpm) * (hiSpeed / 3.75));
+            if (noteAdjust < -20) noteAdjust = -20;
+            if (noteAdjust > 20) noteAdjust = 20;
+            document.getElementById('note-adjust').value = noteAdjust;
+
+            // Judgment Line Position (scaled with HI-SPEED)
+            let judgeLine = Math.round(8 * (hiSpeed / 3.75));
+            if (judgeLine < 0) judgeLine = 0;
+            if (judgeLine > 20) judgeLine = 20;
+            document.getElementById('judge-line').value = judgeLine;
+
+            // SHUTTER (IN) (scaled with HI-SPEED)
+            let shutterIn = Math.round(25 * (hiSpeed / 3.75));
+            if (shutterIn < 0) shutterIn = 0;
+            if (shutterIn > 30) shutterIn = 30;
+            document.getElementById('shutter-in').value = shutterIn;
+
+            // White Number (simplified, half of Green Number)
+            const whiteNumber = Math.round(greenNumber / 2);
+            document.getElementById('white-number').value = whiteNumber;
+
+            saveSettings();
+        }
+
+        // Initialize
+        window.onload = loadSettings;
     </script>
 </body>
 </html>
