@@ -251,3 +251,156 @@
             // Ensure modal text reflects current language
             document.getElementById('modal-text-en').style.display = language === 'en' ? 'block' : 'none';
             document.getElementById('modal-text-jp').style.display = language === 'jp' ? 'block' : 'none';
+        }
+
+        function toggleLanguage(lang) {
+            console.log('Toggling to language: ' + lang); // Debug log
+            if (language === lang) return; // Prevent redundant toggles
+            language = lang;
+
+            // Toggle language buttons
+            document.getElementById('lang-en').style.display = lang === 'en' ? 'inline-block' : 'none';
+            document.getElementById('lang-jp').style.display = lang === 'jp' ? 'inline-block' : 'none';
+
+            // Toggle title and subtitle
+            document.getElementById('title-en').style.display = lang === 'en' ? 'block' : 'none';
+            document.getElementById('title-jp').style.display = lang === 'jp' ? 'block' : 'none';
+            document.getElementById('subtitle-en').style.display = lang === 'en' ? 'block' : 'none';
+            document.getElementById('subtitle-jp').style.display = lang === 'jp' ? 'block' : 'none';
+
+            // Toggle field labels
+            ['bpm', 'hispeed', 'green', 'white', 'note-adjust', 'judge-line', 'shutter-in', 'shutter-out', 'refresh', 'delay'].forEach(id => {
+                document.getElementById(`${id}-label-en`).style.display = lang === 'en' ? 'block' : 'none';
+                document.getElementById(`${id}-label-jp`).style.display = lang === 'jp' ? 'block' : 'none';
+            });
+
+            // Toggle description
+            document.getElementById('desc-en').style.display = lang === 'en' ? 'block' : 'none';
+            document.getElementById('desc-jp').style.display = lang === 'jp' ? 'block' : 'none';
+
+            // Update modal text
+            document.getElementById('modal-text-en').style.display = lang === 'en' ? 'block' : 'none';
+            document.getElementById('modal-text-jp').style.display = lang === 'jp' ? 'block' : 'none';
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('gitadora_settings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                document.getElementById('bpm').value = settings.bpm || 180;
+                document.getElementById('hispeed').value = settings.hispeed || 3.75;
+                document.getElementById('green').value = settings.green || 300;
+                historyLog = settings.history || [];
+                updateHistory();
+            }
+            calculateSettings();
+        }
+
+        function saveSettings() {
+            const settings = {
+                bpm: parseFloat(document.getElementById('bpm').value),
+                hispeed: parseFloat(document.getElementById('hispeed').value),
+                green: parseFloat(document.getElementById('green').value),
+                history: historyLog
+            };
+            localStorage.setItem('gitadora_settings', JSON.stringify(settings));
+        }
+
+        function changeValue(field, delta) {
+            constකs layout. The input element is a number input with a minimum value of 1 and a step of 1 for BPM, and a minimum of 0.5, maximum of 10, and step of 0.25 for HI-SPEED. The green number input has a minimum of 1 and a step of 1.
+
+            const input = document.getElementById(field);
+            let value = parseFloat(input.value) + delta;
+            if (field === 'bpm') value = Math.max(1, Math.round(value));
+            if (field === 'green') value = Math.max(1, Math.round(value));
+            input.value = value;
+            calculateSettings(field);
+        }
+
+        function changeHiSpeed(delta) {
+            const input = document.getElementById('hispeed');
+            let value = parseFloat(input.value) + delta;
+            value = Math.max(0.5, Math.min(10, Math.round(value / 0.25) * 0.25));
+            input.value = value.toFixed(2);
+            calculateSettings('hispeed');
+        }
+
+        function interpolateHiSpeed(bpm) {
+            const points = [
+                { bpm: 78, hispeed: 8.5 },
+                { bpm: 180, hispeed: 3.75 },
+                { bpm: 400, hispeed: 1.5 }
+            ];
+            if (bpm <= 78) return 8.5;
+            if (bpm >= 400) return 1.5;
+            for (let i = 1; i < points.length; i++) {
+                if (bpm <= points[i].bpm) {
+                    const p0 = points[i-1], p1 = points[i];
+                    const t = (bpm - p0.bpm) / (p1.bpm - p0.bpm);
+                    return p0.hispeed + t * (p1.hispeed - p0.hispeed);
+                }
+            }
+        }
+
+        function calculateSettings(changedField) {
+            const bpm = parseFloat(document.getElementById('bpm').value) || 180;
+            let hispeed = parseFloat(document.getElementById('hispeed').value) || 3.75;
+            let green = parseFloat(document.getElementById('green').value) || 300;
+            const refresh = 60;
+            const delay = 9;
+
+            // Check HI-SPEED limits
+            const maxHiSpeed = interpolateHiSpeed(bpm);
+            document.getElementById('hispeed-warning').style.display = hispeed > maxHiSpeed ? 'inline' : 'none';
+
+            // Base calculations
+            if (changedField === 'bpm') {
+                hispeed = interpolateHiSpeed(bpm);
+                green = Math.round((60000 / (bpm * hispeed)) * 3.375);
+            } else if (changedField === 'hispeed') {
+                green = Math.round((60000 / (bpm * hispeed)) * 3.375);
+            } else if (changedField === 'green') {
+                hispeed = (60000 / (bpm * green)) * 3.375;
+                hispeed = Math.max(0.5, Math.min(10, Math.round(hispeed / 0.25) * 0.25));
+            }
+
+            // Note Display Adjust (mimics IIDX timing window, adjusted for delay)
+            let noteAdjust = Math.round(-6 * (180 / bpm) * (3.75 / hispeed));
+            noteAdjust = Math.max(-20, Math.min(20, noteAdjust));
+
+            // Judgment Line Position (scaled with HI-SPEED)
+            let judgeLine = Math.round(8 * (3.75 / hispeed));
+            judgeLine = Math.max(0, Math.min(20, judgeLine));
+
+            // SHUTTER (IN) (adjusted to match visual stability)
+            let shutterIn = Math.round(25 * (3.75 / hispeed));
+            shutterIn = Math.max(0, Math.min(30, shutterIn));
+
+            // White Number (placeholder, as per IIDX simulation)
+            const white = 0;
+
+            // Update fields
+            document.getElementById('hispeed').value = hispeed.toFixed(2);
+            document.getElementById('green').value = green;
+            document.getElementById('white').value = white;
+            document.getElementById('note-adjust').value = noteAdjust;
+            document.getElementById('judge-line').value = judgeLine;
+            document.getElementById('shutter-in').value = shutterIn;
+
+            // Log changes
+            const timestamp = new Date().toLocaleString('ja-JP');
+            const log = `${timestamp}: BPM=${bpm}, HI-SPEED=${hispeed.toFixed(2)}, Green=${green}`;
+            historyLog.unshift(log);
+            if (historyLog.length > 10) historyLog.pop();
+            updateHistory();
+
+            // Save settings
+            saveSettings();
+        }
+
+        function updateHistory() {
+            document.getElementById('history').innerHTML = 'History:<br>' + historyLog.join('<br>');
+        }
+    </script>
+</body>
+</html>
