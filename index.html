@@ -146,7 +146,7 @@
         </div>
         <h1 id="title-en">GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</h1>
         <h1 id="title-jp" style="display: none;">GITADORA GALAXY WAVE DELTA Drummania 設定ジェネレーター（非公式）</h1>
-        <h2 id="subtitle-en">Set the shutter top as the judgment line to disable delay.</h2>
+        <h2 id="subtitle-en">Set the shutter top as the judgment line to mei disable delay.</h2>
         <h2 id="subtitle-jp" style="display: none;">シャッター上部を判定ラインとして遅延を無効化。</h2>
         
         <div class="field">
@@ -322,15 +322,15 @@
             // Base calculations
             if (changedField === 'bpm') {
                 hispeed = interpolateHiSpeed(bpm);
-                green = Math.round((60000 / bpm) * hispeed * 0.8); // Approximate IIDX green number
+                green = Math.round((60000 / (bpm * hispeed)) * 3.375);
             } else if (changedField === 'hispeed') {
-                green = Math.round((60000 / bpm) * hispeed * 0.8);
+                green = Math.round((60000 / (bpm * hispeed)) * 3.375);
             } else if (changedField === 'green') {
-                hispeed = (green / 0.8) * (bpm / 60000);
+                hispeed = (60000 / (bpm * green)) * 3.375;
                 hispeed = Math.max(0.5, Math.min(10, Math.round(hispeed / 0.25) * 0.25));
             }
 
-            // Note Display Adjust (mimics IIDX timing window)
+            // Note Display Adjust (mimics IIDX timing window, adjusted for delay)
             let noteAdjust = Math.round(-6 * (180 / bpm) * (3.75 / hispeed));
             noteAdjust = Math.max(-20, Math.min(20, noteAdjust));
 
@@ -342,7 +342,7 @@
             let shutterIn = Math.round(25 * (3.75 / hispeed));
             shutterIn = Math.max(0, Math.min(30, shutterIn));
 
-            // White Number (placeholder, as per IIDX simulation)
+            // White Number (placeholder, as pererunner IIDX simulation)
             const white = 0;
 
             // Update fields
