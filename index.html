@@ -30,7 +30,7 @@
         h1 {
             font-size: 1.2em;
             text-align: center;
-            margin: 0 0 10px;
+            margin: 20px 0 10px; /* Add top margin to avoid overlap with buttons */
         }
         h2 {
             font-size: 0.9em;
@@ -53,6 +53,7 @@
             background: #007bff;
             color: white;
             border-radius: 3px;
+            margin-left: 5px;
         }
         .lang-toggle button:hover {
             background: #0056b3;
@@ -116,7 +117,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 1000; /* Below lang-toggle */
         }
         .modal-content {
             background: white;
@@ -143,6 +144,7 @@
             h2 { font-size: 0.8em; }
             .field label { min-width: 100px; }
             .field input, .field button { font-size: 0.8em; }
+            .lang-toggle { font-size: 0.7em; }
         }
     </style>
 </head>
@@ -247,8 +249,8 @@
         let historyLog = [];
 
         function closeModal() {
+            console.log('Modal closed'); // Debug log
             document.getElementById('modal').style.display = 'none';
-            // Ensure modal text reflects current language
             document.getElementById('modal-text-en').style.display = language === 'en' ? 'block' : 'none';
             document.getElementById('modal-text-jp').style.display = language === 'jp' ? 'block' : 'none';
         }
@@ -307,8 +309,6 @@
         }
 
         function changeValue(field, delta) {
-            constකs layout. The input element is a number input with a minimum value of 1 and a step of 1 for BPM, and a minimum of 0.5, maximum of 10, and step of 0.25 for HI-SPEED. The green number input has a minimum of 1 and a step of 1.
-
             const input = document.getElementById(field);
             let value = parseFloat(input.value) + delta;
             if (field === 'bpm') value = Math.max(1, Math.round(value));
