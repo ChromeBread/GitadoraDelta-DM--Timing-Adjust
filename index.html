@@ -2,180 +2,356 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</title>
+    <style>
+        /* インラインCSS（要件により外部CSSは使用しない） */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 1.5em;
+            text-align: center;
+            margin: 10px 0;
+        }
+        h2 {
+            font-size: 1.2em;
+            text-align: center;
+            margin: 5px 0;
+        }
+        .lang-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .modal {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            max-width: 80%;
+        }
+        .modal.hidden {
+            display: none;
+        }
+        .input-group {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .input-group label {
+            flex: 1;
+            font-size: 1em;
+        }
+        .input-group input, .input-group button {
+            margin-left: 5px;
+            padding: 5px;
+            font-size: 1em;
+        }
+        .input-group input[disabled] {
+            background-color: #d3d3d3;
+        }
+        .warning {
+            color: red;
+            margin-left: 10px;
+            font-size: 0.9em;
+        }
+        .history {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #ccc;
+            max-height: 150px;
+            overflow-y: auto;
+            width: 100%;
+        }
+        .notes {
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+    </style>
 </head>
-<body style="font-family: sans-serif; margin: 0; padding: 10px; max-width: 100%; box-sizing: border-box;">
-    <!-- Language Switch -->
-    <div style="text-align: right;">
-        <form action="" method="get">
-            <label for="lang">Language:</label>
-            <select id="lang" name="lang" onchange="this.form.submit()">
-                <option value="en" selected>English</option>
-                <option value="jp">日本語</option>
-            </select>
-        </form>
+<body>
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <p id="modal-text-en">For players relying on visual timing or new players only.<br>Tap OK to proceed.</p>
+            <p id="modal-text-jp" style="display: none;">目押し勢 or 新規プレイヤー<br>どちらかに該当する方のみ<br>OKボタンをタップ</p>
+            <button onclick="hideModal()">OK</button>
+        </div>
     </div>
+    <div class="container">
+        <div class="lang-toggle">
+            <button onclick="toggleLanguage()">[日本語]</button>
+        </div>
+        <h1 id="title-en">GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</h1>
+        <h1 id="title-jp" style="display: none;">GITADORA GALAXY WAVE DELTA ドラムマニア設定ジェネレーター（非公式）</h1>
+        <h2 id="subtitle-en">Set the shutter top as the judgment line to disable delay.</h2>
+        <h2 id="subtitle-jp" style="display: none;">シャッター上部を判定ラインとして遅延を無効化。</h2>
 
-    <!-- Modal Dialog -->
-    <dialog open style="border: 1px solid #000; padding: 20px; background: #fff; position: fixed; top: 20%; left: 10%; width: 80%; max-width: 300px; z-index: 1000;">
-        <p style="font-weight: bold; text-align: center;">
-            For players aiming for precise timing or new players only<br>
-            Tap OK to proceed
-        </p>
-        <form method="dialog">
-            <button type="submit" style="display: block; margin: 0 auto; padding: 10px 20px;">OK</button>
-        </form>
-    </dialog>
-
-    <!-- Main Content -->
-    <h1 style="font-size: 1.5em; text-align: center;">
-        GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)
-    </h1>
-    <h2 style="font-size: 1.2em; text-align: center; font-weight: normal;">
-        Set the shutter top as the judgment line to disable delay.
-    </h2>
-
-    <!-- Settings Form -->
-    <form action="" method="post" style="display: flex; flex-direction: column; gap: 10px; margin: 20px auto; max-width: 300px;">
-        <!-- BPM -->
-        <div>
-            <label for="bpm">BPM:</label><br>
-            <input type="number" id="bpm" name="bpm" value="180" min="1" step="1" required style="width: 80px;">
-            <button type="button" onclick="this.form.bpm.value = parseInt(this.form.bpm.value) - 1">−</button>
-            <button type="button" onclick="this.form.bpm.value = parseInt(this.form.bpm.value) + 1">+</button>
+        <div class="input-group">
+            <label id="label-bpm-en">BPM:</label>
+            <label id="label-bpm-jp" style="display: none;">BPM:</label>
+            <button onclick="changeBPM(-1)">-</button>
+            <input type="number" id="bpm" value="180" step="1" min="1" oninput="updateSettings()">
+            <button onclick="changeBPM(1)">+</button>
+            <span id="bpm-warning" class="warning"></span>
+        </div>
+        <div class="input-group">
+            <label id="label-hi-speed-en">HI-SPEED:</label>
+            <label id="label-hi-speed-jp" style="display: none;">HI-SPEED:</label>
+            <button onclick="changeHiSpeed(-0.25)">-</button>
+            <input type="number" id="hi-speed" value="3.75" step="0.25" min="0.5" max="10.0" oninput="updateSettingsFromHiSpeed()">
+            <button onclick="changeHiSpeed(0.25)">+</button>
+            <span id="hi-speed-warning" class="warning"></span>
+        </div>
+        <div class="input-group">
+            <label id="label-note-adjust-en">Note Display Adjust:</label>
+            <label id="label-note-adjust-jp" style="display: none;">ノーツ表示調整:</label>
+            <input type="number" id="note-adjust" value="-6" disabled>
+        </div>
+        <div class="input-group">
+            <label id="label-judge-line-en">Judgment Line Position:</label>
+            <label id="label-judge-line-jp" style="display: none;">判定ライン位置:</label>
+            <input type="number" id="judge-line" value="8" disabled>
+        </div>
+        <div class="input-group">
+            <label id="label-shutter-in-en">SHUTTER (IN):</label>
+            <label id="label-shutter-in-jp" style="display: none;">SHUTTER (IN):</label>
+            <input type="number" id="shutter-in" value="25" disabled>
+        </div>
+        <div class="input-group">
+            <label id="label-shutter-out-en">SHUTTER (OUT):</label>
+            <label id="label-shutter-out-jp" style="display: none;">SHUTTER (OUT):</label>
+            <input type="number" id="shutter-out" value="16" disabled>
+        </div>
+        <div class="input-group">
+            <label id="label-refresh-rate-en">Refresh Rate (Hz):</label>
+            <label id="label-refresh-rate-jp" style="display: none;">リフレッシュレート(Hz):</label>
+            <input type="number" id="refresh-rate" value="60" disabled>
+        </div>
+        <div class="input-group">
+            <label id="label-monitor-delay-en">Monitor Delay (ms):</label>
+            <label id="label-monitor-delay-jp" style="display: none;">モニター遅延(ms):</label>
+            <input type="number" id="monitor-delay" value="9" disabled>
         </div>
 
-        <!-- HI-SPEED -->
-        <div>
-            <label for="hi-speed">HI-SPEED:</label><br>
-            <input type="number" id="hi-speed" name="hi-speed" value="3.75" min="0.5" max="10.0" step="0.25" required style="width: 80px;">
-            <button type="button" onclick="this.form['hi-speed'].value = Math.max(0.5, Math.min(10.0, (Math.round(parseFloat(this.form['hi-speed'].value) * 4) - 1) / 4)).toFixed(2)">−</button>
-            <button type="button" onclick="this.form['hi-speed'].value = Math.max(0.5, Math.min(10.0, (Math.round(parseFloat(this.form['hi-speed'].value) * 4) + 1) / 4)).toFixed(2)">+</button>
-            <span id="hi-speed-warning" style="color: red; display: none;">Adjust required</span>
+        <div class="notes">
+            <p id="notes-en">Notes:<br>
+            - Konaste's HI-SPEED adjustment is in 0.5 units.<br>
+            - Assumes GITADORA GALAXY WAVE DELTA's default monitor has a 9ms delay.<br>
+            - Due to varying sound depth balance per song, assume headphones with no audio delay.<br>
+            - HI-SPEED: x3.75 at BPM: 180 is the limit for stable note display.</p>
+            <p id="notes-jp" style="display: none;">注意書き:<br>
+            - コナステのHI-SPEED調整は0.5単位です。<br>
+            - GITADORA GALAXY WAVE DELTAの初期出荷モニターは遅延9msと仮定。<br>
+            - 各スピーカーから出る音の奥行バランスが曲によって異なるため、ヘッドホンを装着して音声遅延無しを想定。<br>
+            - HI-SPEED: x3.75 BPM: 180はノーツがぶれない限度です。</p>
         </div>
 
-        <!-- Green Number (Editable, represents timing adjustment) -->
-        <div>
-            <label for="green-number">Green Number:</label><br>
-            <input type="number" id="green-number" name="green-number" value="294" min="0" step="1" required style="width: 80px;">
-            <button type="button" onclick="this.form['green-number'].value = parseInt(this.form['green-number'].value) - 1">−</button>
-            <button type="button" onclick="this.form['green-number'].value = parseInt(this.form['green-number'].value) + 1">+</button>
+        <div class="history" id="history">
+            <p>Change History:</p>
         </div>
-
-        <!-- Notes Display Adjustment (Read-only) -->
-        <div>
-            <label for="notes-adjust">Notes Display Adjustment:</label><br>
-            <input type="number" id="notes-adjust" name="notes-adjust" value="-6" min="-20" max="20" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <!-- Judgment Line Position (Read-only) -->
-        <div>
-            <label for="judge-line">Judgment Line Position:</label><br>
-            <input type="number" id="judge-line" name="judge-line" value="8" min="0" max="20" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <!-- SHUTTER (IN) (Read-only) -->
-        <div>
-            <label for="shutter-in">SHUTTER (IN):</label><br>
-            <input type="number" id="shutter-in" name="shutter-in" value="25" min="0" max="30" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <!-- SHUTTER (OUT) (Fixed) -->
-        <div>
-            <label for="shutter-out">SHUTTER (OUT):</label><br>
-            <input type="number" id="shutter-out" name="shutter-out" value="16" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <!-- Refresh Rate (Fixed) -->
-        <div>
-            <label for="refresh-rate">Refresh Rate (Hz):</label><br>
-            <input type="number" id="refresh-rate" name="refresh-rate" value="60" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <!-- Monitor Delay (Fixed) -->
-        <div>
-            <label for="monitor-delay">Monitor Delay (ms):</label><br>
-            <input type="number" id="monitor-delay" name="monitor-delay" value="9" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <!-- White Number (Read-only, placeholder) -->
-        <div>
-            <label for="white-number">White Number:</label><br>
-            <input type="number" id="white-number" name="white-number" value="0" readonly style="width: 80px; background: #e0e0e0;">
-        </div>
-
-        <button type="submit" style="padding: 10px; margin-top: 10px;">Save Settings</button>
-    </form>
-
-    <!-- Explanation -->
-    <details style="margin: 20px auto; max-width: 300px;">
-        <summary>Explanation</summary>
-        <p>
-            This tool helps adjust GITADORA GALAXY WAVE DELTA Drummania settings to fix the SHUTTER (OUT) top as the judgment line, minimizing note timing issues. Default settings (BPM: 180, HI-SPEED: x3.75) are optimized for a 60Hz refresh rate and 9ms monitor delay. Adjust BPM, HI-SPEED, or Green Number to maintain timing accuracy. HI-SPEED limits are approximated: BPM 78 (x8.5), BPM 180 (x3.75), BPM 400 (x1.5). Values outside these may require adjustment (shown in red). Green/White Numbers mimic Beatmania IIDX timing for familiarity.
-        </p>
-    </details>
-
-    <!-- Notes -->
-    <details style="margin: 20px auto; max-width: 300px;">
-        <summary>Notes</summary>
-        <ul>
-            <li>Konaste HI-SPEED adjusts in 0.5 units.</li>
-            <li>Assumes 9ms delay for GITADORA’s default monitor.</li>
-            <li>Sound balance varies by song; use headphones for no audio delay.</li>
-            <li>HI-SPEED x3.75 at BPM 180 is the note stability limit.</li>
-        </ul>
-    </details>
-
-    <!-- History Log -->
-    <div style="margin: 20px auto; max-width: 300px;">
-        <h3>Change History</h3>
-        <textarea rows="5" style="width: 100%;" placeholder="Manually log changes here, e.g., '2025-04-21 20:38: BPM changed to 200'"></textarea>
-    </div>
-
-    <!-- Japanese Translation (Hidden by Default) -->
-    <div id="jp-content" style="display: none;">
-        <h1 style="font-size: 1.5em; text-align: center;">
-            GITADORA GALAXY WAVE DELTA Drummania 設定ジェネレーター（非公式）
-        </h1>
-        <h2 style="font-size: 1.2em; text-align: center; font-weight: normal;">
-            シャッター上部を判定ラインとして設定し、遅延を無効化。
-        </h2>
-        <dialog open style="border: 1px solid #000; padding: 20px; background: #fff; position: fixed; top: 20%; left: 10%; width: 80%; max-width: 300px; z-index: 1000;">
-            <p style="font-weight: bold; text-align: center;">
-                目押し勢または新規プレイヤー<br>
-                のいずれかに該当する方のみ<br>
-                OKボタンをタップ
-            </p>
-            <form method="dialog">
-                <button type="submit" style="display: block; margin: 0 auto; padding: 10px 20px;">OK</button>
-            </form>
-        </dialog>
-        <details style="margin: 20px auto; max-width: 300px;">
-            <summary>説明</summary>
-            <p>
-                このツールは、GITADORA GALAXY WAVE DELTA Drummaniaの設定を調整し、SHUTTER (OUT)の上部を判定ラインとして固定することで、ノーツのタイミング問題を最小限に抑えます。デフォルト設定（BPM: 180、HI-SPEED: x3.75）は、60Hzのリフレッシュレートと9msのモニター遅延向けに最適化されています。BPM、HI-SPEED、または緑数字を調整してタイミング精度を維持します。HI-SPEEDの制限は近似：BPM 78（x8.5）、BPM 180（x3.75）、BPM 400（x1.5）。これを超える値は調整が必要（赤文字で表示）。緑/白数字はBeatmania IIDXのタイミングを模倣。
-            </p>
-        </details>
-        <details style="margin: 20px auto; max-width: 300px;">
-            <summary>注意</summary>
-            <ul>
-                <li>コナステのHI-SPEEDは0.5単位で調整。</li>
-                <li>GITADORAの初期出荷モニターは9msの遅延を想定。</li>
-                <li>曲によりスピーカーの音の奥行きバランスが異なるため、ヘッドホン使用で音声遅延なしを想定。</li>
-                <li>HI-SPEED x3.75、BPM 180はノーツがブレない限界。</li>
-            </ul>
-        </details>
     </div>
 
     <script>
-        // Minimal JS to handle language switch (unavoidable for dynamic content)
-        const lang = new URLSearchParams(window.location.search).get('lang') || 'en';
-        if (lang === 'jp') {
-            document.querySelector('h1').textContent = 'GITADORA GALAXY WAVE DELTA Drummania 設定ジェネレーター（非公式）';
-            document.querySelector('h2').textContent = 'シャッター上部を判定ラインとして設定し、遅延を無効化。';
-            document.getElementById('lang').value = 'jp';
+        // 言語切り替え状態
+        let isJapanese = false;
+
+        // ローカルストレージから初期値を読み込む
+        function loadSettings() {
+            const savedBPM = localStorage.getItem('bpm');
+            const savedHiSpeed = localStorage.getItem('hi-speed');
+            if (savedBPM) document.getElementById('bpm').value = savedBPM;
+            if (savedHiSpeed) document.getElementById('hi-speed').value = savedHiSpeed;
+            updateSettings();
         }
+
+        // モーダルを非表示にする
+        function hideModal() {
+            document.getElementById('modal').classList.add('hidden');
+            loadSettings();
+        }
+
+        // 言語切り替え
+        function toggleLanguage() {
+            isJapanese = !isJapanese;
+            document.getElementById('modal-text-en').style.display = isJapanese ? 'none' : 'block';
+            document.getElementById('modal-text-jp').style.display = isJapanese ? 'block' : 'none';
+            document.getElementById('title-en').style.display = isJapanese ? 'none' : 'block';
+            document.getElementById('title-jp').style.display = isJapanese ? 'block' : 'none';
+            document.getElementById('subtitle-en').style.display = isJapanese ? 'none' : 'block';
+            document.getElementById('subtitle-jp').style.display = isJapanese ? 'block' : 'none';
+            document.getElementById('label-bpm-en').style.display = isJapanese ? 'none' : 'block';
+            document.getElementById('label-bpm-jp').style.display = isJapanese ? 'block' : 'none';
+            document.getElementById('label-hi-speed-en').style.display = isJapanese ? 'none' : 'block';
+            document.getElementById('label-hi-speed-jp').style.display = isJapanese ? 'block' : 'none';
+            document.getElementById('label-note-adjust-en').style.display = isJapanese ? 'none' : 'block';
+            document.getElementById('label-note-adjust-jp').style.display = isJapanese ? 'block' : 'none';
+            document.getElementById('label-judge-line-en').style.display = isJapanese ? 'none' : 'block';
+            document.getElementById('label-judge-line-jp').style.display = isJapanese ? 'block' : 'none';
+            document.getElementById('label-shutter-in-en').style.display = isJapanese ? 'none' : 'block';
+            document.getElementById('label-shutter-in-jp').style.display = isJapanese ? 'block' : 'none';
+            document.getElementById('label-shutter-out-en').style.display = isJapanese ? 'none' : 'block';
+            document.getElementById('label-shutter-out-jp').style.display = isJapanese ? 'block' : 'none';
+            document.getElementById('label-refresh-rate-en').style.display = isJapanese ? 'none' : 'block';
+            document.getElementById('label-refresh-rate-jp').style.display = isJapanese ? 'block' : 'none';
+            document.getElementById('label-monitor-delay-en').style.display = isJapanese ? 'none' : 'block';
+            document.getElementById('label-monitor-delay-jp').style.display = isJapanese ? 'block' : 'none';
+            document.getElementById('notes-en').style.display = isJapanese ? 'none' : 'block';
+            document.getElementById('notes-jp').style.display = isJapanese ? 'block' : 'none';
+            document.querySelector('.lang-toggle button').textContent = isJapanese ? '[English]' : '[日本語]';
+        }
+
+        // BPM変更
+        function changeBPM(delta) {
+            const bpmInput = document.getElementById('bpm');
+            let bpm = parseInt(bpmInput.value) + delta;
+            if (bpm < 1) bpm = 1;
+            bpmInput.value = bpm;
+            updateSettings();
+        }
+
+        // HI-SPEED変更
+        function changeHiSpeed(delta) {
+            const hiSpeedInput = document.getElementById('hi-speed');
+            let hiSpeed = parseFloat(hiSpeedInput.value) + delta;
+            hiSpeed = Math.round(hiSpeed * 100) / 100; // 0.25単位に丸める
+            if (hiSpeed < 0.5) hiSpeed = 0.5;
+            if (hiSpeed > 10.0) hiSpeed = 10.0;
+            hiSpeedInput.value = hiSpeed.toFixed(2);
+            updateSettingsFromHiSpeed();
+        }
+
+        // スプライン補間に基づくHI-SPEED計算
+        function calculateHiSpeed(bpm) {
+            const points = [
+                { bpm: 78, hiSpeed: 8.5 },
+                { bpm: 180, hiSpeed: 3.75 },
+                { bpm: 400, hiSpeed: 1.5 }
+            ];
+            // 単純な線形補間（スプラインの簡略化）
+            if (bpm <= 78) return 8.5;
+            if (bpm >= 400) return 1.5;
+            if (bpm < 180) {
+                const t = (bpm - 78) / (180 - 78);
+                return 8.5 + t * (3.75 - 8.5);
+            } else {
+                const t = (bpm - 180) / (400 - 180);
+                return 3.75 + t * (1.5 - 3.75);
+            }
+        }
+
+        // 設定更新（BPM変更時）
+        function updateSettings() {
+            const bpm = parseInt(document.getElementById('bpm').value);
+            const hiSpeedInput = document.getElementById('hi-speed');
+            const noteAdjustInput = document.getElementById('note-adjust');
+            const judgeLineInput = document.getElementById('judge-line');
+            const shutterInInput = document.getElementById('shutter-in');
+            const hiSpeedWarning = document.getElementById('hi-speed-warning');
+
+            // HI-SPEED計算
+            const optimalHiSpeed = calculateHiSpeed(bpm);
+            hiSpeedInput.value = optimalHiSpeed.toFixed(2);
+
+            // 警告表示
+            hiSpeedWarning.textContent = '';
+
+            // ノーツ表示調整（仮の計算式）
+            let noteAdjust = -6 * (180 / bpm) * (3.75 / optimalHiSpeed);
+            noteAdjust = Math.max(-20, Math.min(20, Math.round(noteAdjust)));
+            noteAdjustInput.value = noteAdjust;
+
+            // 判定ライン位置（固定値仮定）
+            judgeLineInput.value = 8;
+
+            // SHUTTER (IN)（仮の計算式）
+            let shutterIn = 25 * (180 / bpm) * (3.75 / optimalHiSpeed);
+            shutterIn = Math.max(0, Math.min(30, Math.round(shutterIn)));
+            shutterInInput.value = shutterIn;
+
+            // 履歴更新
+            addHistory(`BPM: ${bpm}, HI-SPEED: ${optimalHiSpeed.toFixed(2)}`);
+
+            // ローカルストレージに保存
+            localStorage.setItem('bpm', bpm);
+            localStorage.setItem('hi-speed', optimalHiSpeed.toFixed(2));
+        }
+
+        // 設定更新（HI-SPEED変更時）
+        function updateSettingsFromHiSpeed() {
+            const hiSpeed = parseFloat(document.getElementById('hi-speed').value);
+            const bpm = parseInt(document.getElementById('bpm').value);
+            const noteAdjustInput = document.getElementById('note-adjust');
+            const judgeLineInput = document.getElementById('judge-line');
+            const shutterInInput = document.getElementById('shutter-in');
+            const hiSpeedWarning = document.getElementById('hi-speed-warning');
+
+            // 最適HI-SPEED計算
+            const optimalHiSpeed = calculateHiSpeed(bpm);
+            hiSpeedWarning.textContent = (hiSpeed < optimalHiSpeed - 0.5 || hiSpeed > optimalHiSpeed + 0.5) ? (isJapanese ? '要調整' : 'Adjustment Needed') : '';
+
+            // ノーツ表示調整（仮の計算式）
+            let noteAdjust = -6 * (180 / bpm) * (3.75 / hiSpeed);
+            noteAdjust = Math.max(-20, Math.min(20, Math.round(noteAdjust)));
+            noteAdjustInput.value = noteAdjust;
+
+            // 判定ライン位置（固定値仮定）
+            judgeLineInput.value = 8;
+
+            // SHUTTER (IN)（仮の計算式）
+            let shutterIn = 25 * (180 / bpm) * (3.75 / hiSpeed);
+            shutterIn = Math.max(0, Math.min(30, Math.round(shutterIn)));
+            shutterInInput.value = shutterIn;
+
+            // 履歴更新
+            addHistory(`HI-SPEED: ${hiSpeed.toFixed(2)}, BPM: ${bpm}`);
+
+            // ローカルストレージに保存
+            localStorage.setItem('bpm', bpm);
+            localStorage.setItem('hi-speed', hiSpeed.toFixed(2));
+        }
+
+        // 履歴追加
+        function addHistory(message) {
+            const historyDiv = document.getElementById('history');
+            const timestamp = new Date().toLocaleString();
+            const p = document.createElement('p');
+            p.textContent = `[${timestamp}] ${message}`;
+            historyDiv.appendChild(p);
+            historyDiv.scrollTop = historyDiv.scrollHeight;
+        }
+
+        // 初期化
+        window.onload = function() {
+            loadSettings();
+        };
     </script>
 </body>
 </html>
