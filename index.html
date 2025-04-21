@@ -2,196 +2,180 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</title>
-    <style>
-        /* Minimal inline CSS for basic responsiveness and styling, as no external CSS allowed */
-        body { font-family: Arial, sans-serif; margin: 10px; max-width: 100%; overflow-x: hidden; }
-        h1 { font-size: 1.5em; text-align: center; }
-        h2 { font-size: 1.2em; text-align: center; color: #555; }
-        .modal { display: none; }
-        #modal-toggle:checked ~ .modal { display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
-        .modal-content { background: white; margin: 20% auto; padding: 20px; width: 80%; text-align: center; border-radius: 10px; }
-        .lang-toggle { text-align: right; margin-bottom: 10px; }
-        .field { margin: 10px 0; display: flex; align-items: center; justify-content: space-between; }
-        .field label { flex: 1; }
-        .field input, .field button { margin-left: 5px; }
-        input[disabled] { background: #e0e0e0; }
-        .warning { color: red; font-size: 0.9em; }
-        .notes { font-size: 0.9em; margin-top: 20px; }
-        .history { margin-top: 20px; border: 1px solid #ccc; padding: 10px; }
-        @media (max-width: 600px) { h1 { font-size: 1.2em; } h2 { font-size: 1em; } }
-    </style>
 </head>
-<body>
-    <!-- Modal using checkbox hack -->
-    <input type="checkbox" id="modal-toggle" checked style="display: none;">
-    <div class="modal">
-        <div class="modal-content">
-            <p><strong>目押し勢 or 新規プレイヤー<br>どちらかに該当する方のみ<br>OKボタンをタップ</strong></p>
-            <p><strong>Visual Judgment Players or New Players<br>Only those who apply should tap OK</strong></p>
-            <label for="modal-toggle"><button>OK</button></label>
-        </div>
+<body style="font-family: sans-serif; margin: 0; padding: 10px; max-width: 100%; box-sizing: border-box;">
+    <!-- Language Switch -->
+    <div style="text-align: right;">
+        <form action="" method="get">
+            <label for="lang">Language:</label>
+            <select id="lang" name="lang" onchange="this.form.submit()">
+                <option value="en" selected>English</option>
+                <option value="jp">日本語</option>
+            </select>
+        </form>
     </div>
 
-    <!-- Language Toggle -->
-    <div class="lang-toggle">
-        <label><input type="radio" name="lang" checked> English</label>
-        <label><input type="radio" name="lang"> 日本語</label>
+    <!-- Modal Dialog -->
+    <dialog open style="border: 1px solid #000; padding: 20px; background: #fff; position: fixed; top: 20%; left: 10%; width: 80%; max-width: 300px; z-index: 1000;">
+        <p style="font-weight: bold; text-align: center;">
+            For players aiming for precise timing or new players only<br>
+            Tap OK to proceed
+        </p>
+        <form method="dialog">
+            <button type="submit" style="display: block; margin: 0 auto; padding: 10px 20px;">OK</button>
+        </form>
+    </dialog>
+
+    <!-- Main Content -->
+    <h1 style="font-size: 1.5em; text-align: center;">
+        GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)
+    </h1>
+    <h2 style="font-size: 1.2em; text-align: center; font-weight: normal;">
+        Set the shutter top as the judgment line to disable delay.
+    </h2>
+
+    <!-- Settings Form -->
+    <form action="" method="post" style="display: flex; flex-direction: column; gap: 10px; margin: 20px auto; max-width: 300px;">
+        <!-- BPM -->
+        <div>
+            <label for="bpm">BPM:</label><br>
+            <input type="number" id="bpm" name="bpm" value="180" min="1" step="1" required style="width: 80px;">
+            <button type="button" onclick="this.form.bpm.value = parseInt(this.form.bpm.value) - 1">−</button>
+            <button type="button" onclick="this.form.bpm.value = parseInt(this.form.bpm.value) + 1">+</button>
+        </div>
+
+        <!-- HI-SPEED -->
+        <div>
+            <label for="hi-speed">HI-SPEED:</label><br>
+            <input type="number" id="hi-speed" name="hi-speed" value="3.75" min="0.5" max="10.0" step="0.25" required style="width: 80px;">
+            <button type="button" onclick="this.form['hi-speed'].value = Math.max(0.5, Math.min(10.0, (Math.round(parseFloat(this.form['hi-speed'].value) * 4) - 1) / 4)).toFixed(2)">−</button>
+            <button type="button" onclick="this.form['hi-speed'].value = Math.max(0.5, Math.min(10.0, (Math.round(parseFloat(this.form['hi-speed'].value) * 4) + 1) / 4)).toFixed(2)">+</button>
+            <span id="hi-speed-warning" style="color: red; display: none;">Adjust required</span>
+        </div>
+
+        <!-- Green Number (Editable, represents timing adjustment) -->
+        <div>
+            <label for="green-number">Green Number:</label><br>
+            <input type="number" id="green-number" name="green-number" value="294" min="0" step="1" required style="width: 80px;">
+            <button type="button" onclick="this.form['green-number'].value = parseInt(this.form['green-number'].value) - 1">−</button>
+            <button type="button" onclick="this.form['green-number'].value = parseInt(this.form['green-number'].value) + 1">+</button>
+        </div>
+
+        <!-- Notes Display Adjustment (Read-only) -->
+        <div>
+            <label for="notes-adjust">Notes Display Adjustment:</label><br>
+            <input type="number" id="notes-adjust" name="notes-adjust" value="-6" min="-20" max="20" readonly style="width: 80px; background: #e0e0e0;">
+        </div>
+
+        <!-- Judgment Line Position (Read-only) -->
+        <div>
+            <label for="judge-line">Judgment Line Position:</label><br>
+            <input type="number" id="judge-line" name="judge-line" value="8" min="0" max="20" readonly style="width: 80px; background: #e0e0e0;">
+        </div>
+
+        <!-- SHUTTER (IN) (Read-only) -->
+        <div>
+            <label for="shutter-in">SHUTTER (IN):</label><br>
+            <input type="number" id="shutter-in" name="shutter-in" value="25" min="0" max="30" readonly style="width: 80px; background: #e0e0e0;">
+        </div>
+
+        <!-- SHUTTER (OUT) (Fixed) -->
+        <div>
+            <label for="shutter-out">SHUTTER (OUT):</label><br>
+            <input type="number" id="shutter-out" name="shutter-out" value="16" readonly style="width: 80px; background: #e0e0e0;">
+        </div>
+
+        <!-- Refresh Rate (Fixed) -->
+        <div>
+            <label for="refresh-rate">Refresh Rate (Hz):</label><br>
+            <input type="number" id="refresh-rate" name="refresh-rate" value="60" readonly style="width: 80px; background: #e0e0e0;">
+        </div>
+
+        <!-- Monitor Delay (Fixed) -->
+        <div>
+            <label for="monitor-delay">Monitor Delay (ms):</label><br>
+            <input type="number" id="monitor-delay" name="monitor-delay" value="9" readonly style="width: 80px; background: #e0e0e0;">
+        </div>
+
+        <!-- White Number (Read-only, placeholder) -->
+        <div>
+            <label for="white-number">White Number:</label><br>
+            <input type="number" id="white-number" name="white-number" value="0" readonly style="width: 80px; background: #e0e0e0;">
+        </div>
+
+        <button type="submit" style="padding: 10px; margin-top: 10px;">Save Settings</button>
+    </form>
+
+    <!-- Explanation -->
+    <details style="margin: 20px auto; max-width: 300px;">
+        <summary>Explanation</summary>
+        <p>
+            This tool helps adjust GITADORA GALAXY WAVE DELTA Drummania settings to fix the SHUTTER (OUT) top as the judgment line, minimizing note timing issues. Default settings (BPM: 180, HI-SPEED: x3.75) are optimized for a 60Hz refresh rate and 9ms monitor delay. Adjust BPM, HI-SPEED, or Green Number to maintain timing accuracy. HI-SPEED limits are approximated: BPM 78 (x8.5), BPM 180 (x3.75), BPM 400 (x1.5). Values outside these may require adjustment (shown in red). Green/White Numbers mimic Beatmania IIDX timing for familiarity.
+        </p>
+    </details>
+
+    <!-- Notes -->
+    <details style="margin: 20px auto; max-width: 300px;">
+        <summary>Notes</summary>
+        <ul>
+            <li>Konaste HI-SPEED adjusts in 0.5 units.</li>
+            <li>Assumes 9ms delay for GITADORA’s default monitor.</li>
+            <li>Sound balance varies by song; use headphones for no audio delay.</li>
+            <li>HI-SPEED x3.75 at BPM 180 is the note stability limit.</li>
+        </ul>
+    </details>
+
+    <!-- History Log -->
+    <div style="margin: 20px auto; max-width: 300px;">
+        <h3>Change History</h3>
+        <textarea rows="5" style="width: 100%;" placeholder="Manually log changes here, e.g., '2025-04-21 20:38: BPM changed to 200'"></textarea>
     </div>
 
-    <!-- English Content -->
-    <div class="lang-en">
-        <h1>GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</h1>
-        <h2>Set the shutter top as the judgment line to disable delay.</h2>
-
-        <!-- Input Fields -->
-        <div class="field">
-            <label>BPM:</label>
-            <button>-</button>
-            <input type="number" min="1" step="1" value="180">
-            <button>+</button>
-        </div>
-        <div class="field">
-            <label>HI-SPEED:</label>
-            <button>-</button>
-            <input type="number" min="0.5" max="10" step="0.25" value="3.75">
-            <button>+</button>
-            <span class="warning" id="hi-speed-warning"></span>
-        </div>
-        <div class="field">
-            <label>Notes Display Adjustment:</label>
-            <input type="number" min="-20" max="20" value="-6" disabled>
-        </div>
-        <div class="field">
-            <label>Judgment Line Position:</label>
-            <input type="number" min="0" max="20" value="8" disabled>
-        </div>
-        <div class="field">
-            <label>SHUTTER (IN):</label>
-            <input type="number" min="0" max="30" value="25" disabled>
-        </div>
-        <div class="field">
-            <label>SHUTTER (OUT):</label>
-            <input type="number" value="16" disabled>
-        </div>
-        <div class="field">
-            <label>Refresh Rate (Hz):</label>
-            <input type="number" value="60" disabled>
-        </div>
-        <div class="field">
-            <label>Monitor Delay (ms):</label>
-            <input type="number" value="9" disabled>
-        </div>
-        <div class="field">
-            <label>GD Green Number:</label>
-            <button>-</button>
-            <input type="number" value="0">
-            <button>+</button>
-        </div>
-        <div class="field">
-            <label>White Number:</label>
-            <input type="number" value="0" disabled>
-        </div>
-
-        <!-- Explanation -->
-        <div class="notes">
-            <p><strong>Explanation:</strong> This tool adjusts settings to fix the SHUTTER (OUT) top as the judgment line, ensuring notes align without delay at 60Hz. HI-SPEED is interpolated (e.g., BPM 400: x1.5, BPM 78: x8.5, BPM 180: x3.75). Exceeding interpolated HI-SPEED shows "Adjust Required" in red. Changing BPM updates HI-SPEED, Notes Display Adjustment, Judgment Line Position, and SHUTTER (IN) to maintain green number. Changing GD Green Number or HI-SPEED adjusts other fields while keeping BPM constant. Green/White numbers emulate beatmania IIDX 31 EPOLIS formulas, with GD Green Number as a virtualized personal setting.</p>
-        </div>
-
-        <!-- Notes -->
-        <div class="notes">
-            <p><strong>Notes:</strong></p>
+    <!-- Japanese Translation (Hidden by Default) -->
+    <div id="jp-content" style="display: none;">
+        <h1 style="font-size: 1.5em; text-align: center;">
+            GITADORA GALAXY WAVE DELTA Drummania 設定ジェネレーター（非公式）
+        </h1>
+        <h2 style="font-size: 1.2em; text-align: center; font-weight: normal;">
+            シャッター上部を判定ラインとして設定し、遅延を無効化。
+        </h2>
+        <dialog open style="border: 1px solid #000; padding: 20px; background: #fff; position: fixed; top: 20%; left: 10%; width: 80%; max-width: 300px; z-index: 1000;">
+            <p style="font-weight: bold; text-align: center;">
+                目押し勢または新規プレイヤー<br>
+                のいずれかに該当する方のみ<br>
+                OKボタンをタップ
+            </p>
+            <form method="dialog">
+                <button type="submit" style="display: block; margin: 0 auto; padding: 10px 20px;">OK</button>
+            </form>
+        </dialog>
+        <details style="margin: 20px auto; max-width: 300px;">
+            <summary>説明</summary>
+            <p>
+                このツールは、GITADORA GALAXY WAVE DELTA Drummaniaの設定を調整し、SHUTTER (OUT)の上部を判定ラインとして固定することで、ノーツのタイミング問題を最小限に抑えます。デフォルト設定（BPM: 180、HI-SPEED: x3.75）は、60Hzのリフレッシュレートと9msのモニター遅延向けに最適化されています。BPM、HI-SPEED、または緑数字を調整してタイミング精度を維持します。HI-SPEEDの制限は近似：BPM 78（x8.5）、BPM 180（x3.75）、BPM 400（x1.5）。これを超える値は調整が必要（赤文字で表示）。緑/白数字はBeatmania IIDXのタイミングを模倣。
+            </p>
+        </details>
+        <details style="margin: 20px auto; max-width: 300px;">
+            <summary>注意</summary>
             <ul>
-                <li>Konaste HI-SPEED adjusts in 0.5 units.</li>
-                <li>Assumes GITADORA GALAXY WAVE DELTA's default monitor has 9ms delay.</li>
-                <li>Sound depth varies by song; use headphones for zero audio delay.</li>
-                <li>HI-SPEED x3.75 at BPM 180 is the limit for stable notes.</li>
+                <li>コナステのHI-SPEEDは0.5単位で調整。</li>
+                <li>GITADORAの初期出荷モニターは9msの遅延を想定。</li>
+                <li>曲によりスピーカーの音の奥行きバランスが異なるため、ヘッドホン使用で音声遅延なしを想定。</li>
+                <li>HI-SPEED x3.75、BPM 180はノーツがブレない限界。</li>
             </ul>
-        </div>
-
-        <!-- History Log -->
-        <div class="history">
-            <h3>Change History</h3>
-            <textarea rows="5" cols="30" disabled>Timestamp: [Pending dynamic update]</textarea>
-        </div>
+        </details>
     </div>
 
-    <!-- Japanese Content -->
-    <div class="lang-jp" style="display: none;">
-        <h1>GITADORA GALAXY WAVE DELTA Drummania セッティングジェネレーター（非公式）</h1>
-        <h2>シャッターの上部を判定ラインとして設定し、遅延を無効化します。</h2>
-
-        <!-- Input Fields -->
-        <div class="field">
-            <label>BPM:</label>
-            <button>-</button>
-            <input type="number" min="1" step="1" value="180">
-            <button>+</button>
-        </div>
-        <div class="field">
-            <label>HI-SPEED:</label>
-            <button>-</button>
-            <input type="number" min="0.5" max="10" step="0.25" value="3.75">
-            <button>+</button>
-            <span class="warning" id="hi-speed-warning-jp"></span>
-        </div>
-        <div class="field">
-            <label>ノーツ表示調整:</label>
-            <input type="number" min="-20" max="20" value="-6" disabled>
-        </div>
-        <div class="field">
-            <label>判定ライン位置:</label>
-            <input type="number" min="0" max="20" value="8" disabled>
-        </div>
-        <div class="field">
-            <label>SHUTTER (IN):</label>
-            <input type="number" min="0" max="30" value="25" disabled>
-        </div>
-        <div class="field">
-            <label>SHUTTER (OUT):</label>
-            <input type="number" value="16" disabled>
-        </div>
-        <div class="field">
-            <label>リフレッシュレート (Hz):</label>
-            <input type="number" value="60" disabled>
-        </div>
-        <div class="field">
-            <label>モニター遅延 (ms):</label>
-            <input type="number" value="9" disabled>
-        </div>
-        <div class="field">
-            <label>GD緑数字:</label>
-            <button>-</button>
-            <input type="number" value="0">
-            <button>+</button>
-        </div>
-        <div class="field">
-            <label>白数字:</label>
-            <input type="number" value="0" disabled>
-        </div>
-
-        <!-- Explanation -->
-        <div class="notes">
-            <p><strong>説明:</strong> このツールは、SHUTTER (OUT)の上部を判定ラインとして固定し、60Hzでノーツがブレないように設定を調整します。HI-SPEEDは補間されます（例：BPM 400：x1.5、BPM 78：x8.5、BPM 180：x3.75）。補間されたHI-SPEEDを超えると「要調整」が赤で表示されます。BPMを変更すると、緑数字を維持しつつHI-SPEED、ノーツ表示調整、判定ライン位置、SHUTTER (IN)が更新されます。GD緑数字やHI-SPEEDを変更すると、BPMを維持しつつ他のフィールドが調整されます。緑/白数字はbeatmania IIDX 31 EPOLISの数式を模倣し、GD緑数字は個人設定を仮想化したものです。</p>
-        </div>
-
-        <!-- Notes -->
-        <div class="notes">
-            <p><strong>注意書き:</strong></p>
-            <ul>
-                <li>コナステのHI-SPEED調整は0.5単位です。</li>
-                <li>GITADORA GALAXY WAVE DELTAの初期出荷モニターは遅延9msと仮定します。</li>
-                <li>各スピーカーから出る音の奥行バランスが曲によって異なるため、ヘッドホンを装着して音声遅延無しを想定します。</li>
-                <li>HI-SPEED x3.75 BPM 180はノーツがぶれない限度です。</li>
-            </ul>
-        </div>
-
-        <!-- History Log -->
-        <div class="history">
-            <h3>変更履歴</h3>
-            <textarea rows="5" cols="30" disabled>タイムスタンプ: [動的更新待ち]</textarea>
-        </div>
-    </div>
+    <script>
+        // Minimal JS to handle language switch (unavoidable for dynamic content)
+        const lang = new URLSearchParams(window.location.search).get('lang') || 'en';
+        if (lang === 'jp') {
+            document.querySelector('h1').textContent = 'GITADORA GALAXY WAVE DELTA Drummania 設定ジェネレーター（非公式）';
+            document.querySelector('h2').textContent = 'シャッター上部を判定ラインとして設定し、遅延を無効化。';
+            document.getElementById('lang').value = 'jp';
+        }
+    </script>
 </body>
 </html>
