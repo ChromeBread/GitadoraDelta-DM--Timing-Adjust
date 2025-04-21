@@ -2,281 +2,148 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</title>
     <style>
-        /* Inline CSS for responsive 9:16 design, as external CSS is not allowed */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #f0f0f0;
-            max-width: 360px;
-            margin: 0 auto;
-            font-size: 16px;
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
-        .container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            font-size: 1.5em;
-            text-align: center;
-            margin: 0.5em 0;
-        }
-        h2 {
-            font-size: 1.2em;
-            text-align: center;
-            color: #555;
-            margin-bottom: 1em;
-        }
-        .lang-toggle {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-        }
-        .lang-toggle label {
-            padding: 5px 10px;
-            background: #007bff;
-            color: #fff;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        #modal-toggle:checked ~ .modal {
-            display: flex;
-        }
-        #modal-toggle:checked ~ .container {
-            pointer-events: none;
-            filter: blur(2px);
-        }
-        #modal-toggle {
-            display: none;
-        }
-        .modal-content {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            max-width: 80%;
-        }
-        .modal-content button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .field {
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .field label {
-            flex: 1;
-            font-weight: bold;
-        }
-        .field input, .field button {
-            width: 60px;
-            padding: 5px;
-            margin: 0 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            text-align: center;
-        }
-        .field input:disabled {
-            background: #e0e0e0;
-            color: #666;
-        }
-        .field button {
-            background: #007bff;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            width: 30px;
-        }
-        .warning {
-            color: red;
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
-        .notes, .cautions {
-            margin: 20px 0;
-            padding: 10px;
-            background: #f9f9f9;
-            border-left: 4px solid #007bff;
-        }
-        .history {
-            margin-top: 20px;
-            padding: 10px;
-            background: #f9f9f9;
-            border-left: 4px solid #007bff;
-        }
-        .history ul {
-            list-style: none;
-            padding: 0;
-        }
-        .history li {
-            margin: 5px 0;
-        }
-        /* Japanese content hidden by default */
-        [lang="ja"] {
-            display: none;
-        }
-        #lang-ja:checked ~ .container [lang="en"] {
-            display: none;
-        }
-        #lang-ja:checked ~ .container [lang="ja"] {
-            display: block;
-        }
-        #lang-ja:checked ~ .lang-toggle label[for="lang-ja"] {
-            background: #28a745;
-        }
-        #lang-en:checked ~ .lang-toggle label[for="lang-en"] {
-            background: #28a745;
-        }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f0f0f0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .container { width: 90%; max-width: 360px; padding: 10px; aspect-ratio: 9/16; }
+        h1 { font-size: 20px; text-align: center; margin: 10px 0; }
+        h2 { font-size: 16px; text-align: center; margin: 5px 0; color: #555; }
+        .lang-toggle { position: absolute; top: 10px; right: 10px; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 80%; }
+        .modal-content p { font-weight: bold; }
+        .field { margin: 10px 0; display: flex; align-items: center; justify-content: space-between; }
+        .field label { font-size: 14px; width: 40%; }
+        .field input, .field button { font-size: 14px; padding: 5px; }
+        .field input[disabled] { background: #e0e0e0; }
+        .field button { width: 30px; }
+        .warning { font-size: 12px; color: red; margin: 5px 0; }
+        .note { font-size: 12px; margin: 10px 0; }
+        .history { border: 1px solid #ccc; padding: 10px; margin-top: 20px; font-size: 12px; max-height: 100px; overflow-y: auto; }
     </style>
 </head>
 <body>
-    <!-- Modal toggle -->
-    <input type="checkbox" id="modal-toggle" checked>
-    <!-- Language toggle -->
-    <div class="lang-toggle">
-        <input type="radio" id="lang-en" name="language" checked>
-        <label for="lang-en">English</label>
-        <input type="radio" id="lang-ja" name="language">
-        <label for="lang-ja">日本語</label>
-    </div>
     <!-- Modal -->
-    <div class="modal">
+    <div id="modal" class="modal">
         <div class="modal-content">
-            <p lang="en"><strong>Visual Timing Players or New Players Only</strong><br>Tap OK to proceed</p>
-            <p lang="ja"><strong>目押し勢または新規プレイヤーのみ</strong><br>OKボタンをタップ</p>
-            <label for="modal-toggle"><button>OK</button></label>
+            <p id="modal-text">Only for players who rely on visual timing or new players.<br>Please tap OK.</p>
+            <form action="" method="POST">
+                <input type="hidden" name="modal_dismiss" value="1">
+                <button type="submit">OK</button>
+            </form>
         </div>
     </div>
+
     <div class="container">
-        <h1 lang="en">GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</h1>
-        <h1 lang="ja">GITADORA GALAXY WAVE DELTA Drummania セッティングジェネレーター（非公式）</h1>
-        <h2 lang="en">Set the shutter top as the judgment line to disable delay.</h2>
-        <h2 lang="ja">シャッター上部を判定ラインとして固定し、遅延を無効化します。</h2>
-
-        <!-- Input Fields -->
-        <div class="field">
-            <label lang="en">BPM:</label>
-            <label lang="ja">BPM:</label>
-            <button type="button" onclick="this.nextElementSibling.stepDown()">-</button>
-            <input type="number" name="bpm" value="180" min="1" step="1" required>
-            <button type="button" onclick="this.previousElementSibling.stepUp()">+</button>
-        </div>
-        <div class="field">
-            <label lang="en">HI-SPEED:</label>
-            <label lang="ja">HI-SPEED:</label>
-            <button type="button" onclick="this.nextElementSibling.stepDown()">-</button>
-            <input type="number" name="hi_speed" value="3.75" min="0.5" max="10.0" step="0.25" required>
-            <button type="button" onclick="this.previousElementSibling.stepUp()">+</button>
-            <span class="warning" lang="en">Adjust if exceeds interpolated range</span>
-            <span class="warning" lang="ja">補間範囲を超える場合は調整が必要です</span>
-        </div>
-        <div class="field">
-            <label lang="en">Green Number (Timing):</label>
-            <label lang="ja">緑数字（タイミング）:</label>
-            <button type="button" onclick="this.nextElementSibling.stepDown()">-</button>
-            <input type="number" name="green_number" value="0" min="-20" max="20" step="1" required>
-            <button type="button" onclick="this.previousElementSibling.stepUp()">+</button>
-        </div>
-        <div class="field">
-            <label lang="en">White Number (Reference):</label>
-            <label lang="ja">白数字（参照）:</label>
-            <input type="number" name="white_number" value="0" disabled>
-        </div>
-        <div class="field">
-            <label lang="en">Note Display Adjustment:</label>
-            <label lang="ja">ノーツ表示調整:</label>
-            <input type="number" name="note_adjust" value="-6" min="-20" max="20" disabled>
-        </div>
-        <div class="field">
-            <label lang="en">Judgment Line Position:</label>
-            <label lang="ja">判定ライン位置:</label>
-            <input type="number" name="judge_line" value="8" min="0" max="20" disabled>
-        </div>
-        <div class="field">
-            <label lang="en">SHUTTER (IN):</label>
-            <label lang="ja">SHUTTER (IN):</label>
-            <input type="number" name="shutter_in" value="25" min="0" max="30" disabled>
-        </div>
-        <div class="field">
-            <label lang="en">SHUTTER (OUT):</label>
-            <label lang="ja">SHUTTER (OUT):</label>
-            <input type="number" name="shutter_out" value="16" disabled>
-        </div>
-        <div class="field">
-            <label lang="en">Refresh Rate (Hz):</label>
-            <label lang="ja">リフレッシュレート (Hz):</label>
-            <input type="number" name="refresh_rate" value="60" disabled>
-        </div>
-        <div class="field">
-            <label lang="en">Monitor Delay (ms):</label>
-            <label lang="ja">モニター遅延 (ms):</label>
-            <input type="number" name="monitor_delay" value="9" disabled>
+        <!-- Language Toggle -->
+        <div class="lang-toggle">
+            <form action="" method="POST">
+                <input type="hidden" name="lang" value="jp">
+                <button type="submit">日本語</button>
+            </form>
         </div>
 
-        <!-- Description -->
-        <div class="notes">
-            <h3 lang="en">Description</h3>
-            <h3 lang="ja">説明</h3>
-            <p lang="en">
-                This tool generates settings for GITADORA GALAXY WAVE DELTA Drummania to fix the SHUTTER (OUT) top as the judgment line, minimizing note jitter at 60Hz. HI-SPEED is interpolated between BPM 78 (x8.5) and BPM 400 (x1.5), with BPM 180 at x3.75 as reference. Adjust BPM, HI-SPEED, or Green Number to update other fields while maintaining timing. Non-editable fields are grayed out. Values persist across browser sessions (requires server-side storage).
-            </p>
-            <p lang="ja">
-                このツールは、GITADORA GALAXY WAVE DELTA Drummaniaの設定を生成し、SHUTTER (OUT)の上部を判定ラインとして固定し、60Hzでのノーツのブレを最小限に抑えます。HI-SPEEDはBPM 78（x8.5）からBPM 400（x1.5）の間で補間され、BPM 180ではx3.75が基準です。BPM、HI-SPEED、または緑数字を調整して他のフィールドを更新し、タイミングを維持します。編集できないフィールドはグレーアウトされています。値はブラウザセッション間で保持されます（サーバー側ストレージが必要です）。
-            </p>
+        <!-- Titles -->
+        <h1 id="title">GITADORA GALAXY WAVE DELTA Drummania Settings Generator (unofficial)</h1>
+        <h2 id="subtitle">Set the shutter top as the judgment line to disable delay.</h2>
+
+        <!-- Settings Form -->
+        <form action="" method="POST">
+            <!-- BPM -->
+            <div class="field">
+                <label for="bpm">BPM:</label>
+                <button type="submit" name="bpm_dec">-</button>
+                <input type="number" id="bpm" name="bpm" value="180" min="1" step="1" required>
+                <button type="submit" name="bpm_inc">+</button>
+            </div>
+
+            <!-- HI-SPEED -->
+            <div class="field">
+                <label for="hi_speed">HI-SPEED:</label>
+                <button type="submit" name="hi_speed_dec">-</button>
+                <input type="number" id="hi_speed" name="hi_speed" value="3.75" min="0.5" max="10.0" step="0.25" required>
+                <button type="submit" name="hi_speed_inc">+</button>
+            </div>
+
+            <!-- Green Number -->
+            <div class="field">
+                <label for="green_number">Green Number:</label>
+                <input type="number" id="green_number" name="green_number" value="225" required>
+            </div>
+
+            <!-- Non-editable Fields -->
+            <div class="field">
+                <label for="note_adjust">Note Display Adjust:</label>
+                <input type="number" id="note_adjust" name="note_adjust" value="-6" disabled>
+            </div>
+            <div class="field">
+                <label for="judge_line">Judgment Line Position:</label>
+                <input type="number" id="judge_line" name="judge_line" value="8" disabled>
+            </div>
+            <div class="field">
+                <label for="shutter_in">SHUTTER (IN):</label>
+                <input type="number" id="shutter_in" name="shutter_in" value="25" disabled>
+            </div>
+            <div class="field">
+                <label for="shutter_out">SHUTTER (OUT):</label>
+                <input type="number" id="shutter_out" name="shutter_out" value="16" disabled>
+            </div>
+            <div class="field">
+                <label for="refresh_rate">Refresh Rate (Hz):</label>
+                <input type="number" id="refresh_rate" name="refresh_rate" value="60" disabled>
+            </div>
+            <div class="field">
+                <label for="monitor_delay">Monitor Delay (ms):</label>
+                <input type="number" id="monitor_delay" name="monitor_delay" value="9" disabled>
+            </div>
+            <div class="field">
+                <label for="white_number">White Number:</label>
+                <input type="number" id="white_number" name="white_number" value="150" disabled>
+            </div>
+
+            <!-- Warning for HI-SPEED -->
+            <div class="warning" id="hi_speed_warning"></div>
+        </form>
+
+        <!-- Explanation -->
+        <div class="note" id="explanation">
+            <p>This tool calculates settings to fix the judgment line at SHUTTER (OUT)'s top, ensuring stable note display at 60Hz. BPM, HI-SPEED, and Green Number adjustments recalculate Note Display Adjust, Judgment Line Position, and SHUTTER (IN). HI-SPEED is interpolated (BPM 78: x8.5, 180: x3.75, 400: x1.5).</p>
         </div>
 
-        <!-- Cautions -->
-        <div class="cautions">
-            <h3 lang="en">Cautions</h3>
-            <h3 lang="ja">注意書き</h3>
-            <ul>
-                <li lang="en">* Konaste HI-SPEED adjustment is in 0.5 units.</li>
-                <li lang="ja">* コナステのHI-SPEED調整は0.5単位です。</li>
-                <li lang="en">* GITADORA GALAXY WAVE DELTA's initial monitor delay is assumed to be 9ms.</li>
-                <li lang="ja">* GITADORA GALAXY WAVE DELTAの初期出荷モニターは遅延9msと仮定。</li>
-                <li lang="en">* Sound depth balance varies by song; use headphones to assume no audio delay.</li>
-                <li lang="ja">* 各スピーカーから出る音の奥行バランスが曲によって異なるため、ヘッドホンを装着して音声遅延無しを想定。</li>
-                <li lang="en">* HI-SPEED: x3.75 at BPM: 180 is the limit for stable notes.</li>
-                <li lang="ja">* HI-SPEED: x3.75 BPM: 180はノーツがぶれない限度です。</li>
-            </ul>
+        <!-- Warnings -->
+        <div class="note" id="warnings">
+            <p>※ KONASTE HI-SPEED adjusts in 0.5 units.<br>
+            ※ Assumes 9ms monitor delay for GITADORA GALAXY WAVE DELTA's default monitor.<br>
+            ※ Sound depth varies by song; use headphones for zero audio delay.<br>
+            ※ HI-SPEED x3.75 at BPM 180 is the limit for stable notes.</p>
         </div>
 
         <!-- History Log -->
-        <div class="history">
-            <h3 lang="en">Change History</h3>
-            <h3 lang="ja">変更履歴</h3>
-            <ul>
-                <li lang="en">[Placeholder: 2025-04-21 19:36 JST] Updated BPM to 180, HI-SPEED to x3.75</li>
-                <li lang="ja">[プレースホルダー: 2025-04-21 19:36 JST] BPMを180に、HI-SPEEDをx3.75に更新</li>
-            </ul>
+        <div class="history" id="history">
+            <p>[2025-04-21 19:44 JST] BPM: 180, HI-SPEED: x3.75, Green Number: 225</p>
         </div>
     </div>
+
+    <!-- Japanese Language Form (Hidden, for Toggle) -->
+    <form id="lang_jp_form" action="" method="POST" style="display: none;">
+        <input type="hidden" name="lang" value="en">
+        <input type="submit" value="English">
+    </form>
+
+    <!-- Server-side Logic Placeholder -->
+    <!--
+        Server-side (e.g., PHP) would handle:
+        - Modal dismissal: Hide modal if $_POST['modal_dismiss'] == 1
+        - Language toggle: Switch text based on $_POST['lang'] ('en' or 'jp')
+        - Calculations:
+            - HI-SPEED bounds: Linear interpolation between (78, 8.5), (180, 3.75), (400, 1.5)
+            - Green Number: (60000 / BPM) * (4 / HI-SPEED) - 9
+            - Note Display Adjust: -6 * (180 / BPM) * (HI-SPEED / 3.75), clamped -20 to +20
+            - Judgment Line Position: 8 + (BPM - 180) * 0.02, clamped 0 to 20
+            - SHUTTER (IN): 25 - (HI-SPEED - 3.75) * 2, clamped 0 to 30
+        - Local storage: Save $_POST values to session or database
+        - History: Append timestamp and changed values
+    -->
 </body>
 </html>
